@@ -1,7 +1,6 @@
 package com.nilemobile.backend.exception;
 
 import com.nilemobile.backend.reponse.ApiResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,10 +13,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PhoneNumberAlreadyExisted.class)
     public ResponseEntity<ApiResponse> handleUserByPhoneNumberAlreadyExisted(PhoneNumberAlreadyExisted ex) {
+
+        ErrorCode e = ErrorCode.PHONE_NUMBER_ALREADY_EXISTS;
+
         ApiResponse response = ApiResponse.builder()
                 .success(false)
-                .code(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getCode())
-                .message(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getMessage())
+                .code(e.getCode())
+                .message(e.getMessage())
                 .timestamp(Timestamp.from(Instant.now()))
                 .build();
         return ResponseEntity.badRequest().body(response);
@@ -25,10 +27,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExisted.class)
     public ResponseEntity<ApiResponse> handleUserByEmailAlreadyExisted(PhoneNumberAlreadyExisted ex) {
+        ErrorCode e = ErrorCode.EMAIL_ALREADY_EXISTS;
         ApiResponse response = ApiResponse.builder()
                 .success(false)
-                .code(ErrorCode.EMAIL_ALREADY_EXISTS.getCode())
-                .message(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage())
+                .code(e.getCode())
+                .message(e.getMessage())
                 .timestamp(Timestamp.from(Instant.now()))
                 .build();
         return ResponseEntity.badRequest().body(response);
