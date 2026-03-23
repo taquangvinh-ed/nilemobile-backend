@@ -1,9 +1,10 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.model.Categories;
 import com.nilemobile.backend.reponse.CategoryDTO;
 import com.nilemobile.backend.repository.CategoryRepository;
 import com.nilemobile.backend.request.CreateCategoryRequest;
+import com.nilemobile.backend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CategoryServiceImp implements CategoryService{
+public class CategoryServiceImp implements CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;

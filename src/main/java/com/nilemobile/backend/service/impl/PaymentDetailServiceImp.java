@@ -1,4 +1,4 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.model.Order;
 import com.nilemobile.backend.model.PaymentDetails;
@@ -6,6 +6,8 @@ import com.nilemobile.backend.model.PaymentMethod;
 import com.nilemobile.backend.model.PaymentStatus;
 import com.nilemobile.backend.repository.OrderRepository;
 import com.nilemobile.backend.repository.PaymentDetailRepository;
+import com.nilemobile.backend.service.OrderService;
+import com.nilemobile.backend.service.PaymentDetailService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

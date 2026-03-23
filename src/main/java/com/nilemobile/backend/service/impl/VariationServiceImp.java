@@ -1,4 +1,4 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.exception.VariationException;
@@ -9,6 +9,8 @@ import com.nilemobile.backend.reponse.VariationDTO2;
 import com.nilemobile.backend.repository.ProductRepository;
 import com.nilemobile.backend.repository.VariationRepository;
 import com.nilemobile.backend.request.CreateVariationRequest;
+import com.nilemobile.backend.service.ProductService;
+import com.nilemobile.backend.service.VariationService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

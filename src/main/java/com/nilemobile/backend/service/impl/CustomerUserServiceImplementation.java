@@ -1,4 +1,4 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.repository.UserRepository;

@@ -4,18 +4,24 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "PRODUCT")
-public class Product {
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "products")
+public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id", length = 36)
-    private Long id;
+    @Column(length = 36)
+    private Long productId;
 
     @Column(name = "name", nullable = false)
     @NotBlank(message = "Tên sản phẩm không được để trống")
@@ -79,173 +85,4 @@ public class Product {
 
     private LocalDateTime createAt;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Float getScreenSize() {
-        return screenSize;
-    }
-
-    public void setScreenSize(Float screenSize) {
-        this.screenSize = screenSize;
-    }
-
-    public String getDisplayTech() {
-        return displayTech;
-    }
-
-    public void setDisplayTech(String displayTech) {
-        this.displayTech = displayTech;
-    }
-
-    public String getResolution() {
-        return resolution;
-    }
-
-    public void setResolution(String resolution) {
-        this.resolution = resolution;
-    }
-
-    public String getRefreshRate() {
-        return refreshRate;
-    }
-
-    public void setRefreshRate(String refreshRate) {
-        this.refreshRate = refreshRate;
-    }
-
-    public String getFrontCamera() {
-        return frontCamera;
-    }
-
-    public void setFrontCamera(String frontCamera) {
-        this.frontCamera = frontCamera;
-    }
-
-    public String getBackCamera() {
-        return backCamera;
-    }
-
-    public void setBackCamera(String backCamera) {
-        this.backCamera = backCamera;
-    }
-
-    public String getChipset() {
-        return chipset;
-    }
-
-    public void setChipset(String chipset) {
-        this.chipset = chipset;
-    }
-
-    public String getCpu() {
-        return cpu;
-    }
-
-    public void setCpu(String cpu) {
-        this.cpu = cpu;
-    }
-
-    public String getGpu() {
-        return gpu;
-    }
-
-    public void setGpu(String gpu) {
-        this.gpu = gpu;
-    }
-
-    public Integer getBatteryCapacity() {
-        return batteryCapacity;
-    }
-
-    public void setBatteryCapacity(Integer batteryCapacity) {
-        this.batteryCapacity = batteryCapacity;
-    }
-
-    public String getChargingPort() {
-        return chargingPort;
-    }
-
-    public void setChargingPort(String chargingPort) {
-        this.chargingPort = chargingPort;
-    }
-
-    public String getOs() {
-        return os;
-    }
-
-    public void setOs(String os) {
-        this.os = os;
-    }
-
-    public String getProductSize() {
-        return productSize;
-    }
-
-    public void setProductSize(String productSize) {
-        this.productSize = productSize;
-    }
-
-    public Float getProductWeight() {
-        return productWeight;
-    }
-
-    public void setProductWeight(Float productWeight) {
-        this.productWeight = productWeight;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<Variation> getVariations() {
-        return variations;
-    }
-
-    public void setVariations(List<Variation> variations) {
-        this.variations = variations;
-    }
-
-    public void setCategories(Categories categories) {
-        this.categories = categories;
-    }
-
-    public Categories getCategories() {
-        return categories;
-    }
-
-    public LocalDateTime getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(LocalDateTime createAt) {
-        this.createAt = createAt;
-    }
-
-    public void addVariation(Variation variation) {
-        variations.add(variation);
-        variation.setProduct(this);
-    }
-
-    public void removeVariation(Variation variation) {
-        variations.remove(variation);
-        variation.setProduct(null);
-    }
 }

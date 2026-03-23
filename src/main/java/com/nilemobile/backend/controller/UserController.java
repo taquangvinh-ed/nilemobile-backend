@@ -1,29 +1,46 @@
 package com.nilemobile.backend.controller;
 
 import com.nilemobile.backend.model.User;
+import com.nilemobile.backend.reponse.ApiResponse;
+import com.nilemobile.backend.reponse.RegisterResponseDTO;
 import com.nilemobile.backend.reponse.UserProfileDTO;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.request.ChangePasswordRequest;
+import com.nilemobile.backend.request.CreateUserRequest;
 import com.nilemobile.backend.service.UserException;
 import com.nilemobile.backend.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+
+    @PostMapping("/register")
+    ApiResponse<RegisterResponseDTO> register(@Validated @RequestBody CreateUserRequest request) {
+        ApiResponse response = ApiResponse.builder()
+                .success(true)
+                .code(200)
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(userService.registerUser(request))
+                .build();
+        return response;
+    }
 
     @GetMapping("/me")
     public ResponseEntity<UserProfileDTO> getMyProfile() throws UserException {

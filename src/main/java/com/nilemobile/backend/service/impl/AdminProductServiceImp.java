@@ -1,14 +1,14 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.ProductException;
-import com.nilemobile.backend.exception.VariationException;
 import com.nilemobile.backend.model.Categories;
 import com.nilemobile.backend.model.Product;
-import com.nilemobile.backend.model.Variation;
 import com.nilemobile.backend.reponse.AdminProductDTO;
 import com.nilemobile.backend.repository.CategoryRepository;
 import com.nilemobile.backend.repository.ProductRepository;
 import com.nilemobile.backend.request.AdminCreateProductRequest;
+import com.nilemobile.backend.service.AdminProductService;
+import com.nilemobile.backend.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AdminProductServiceImp implements AdminProductService{
+public class AdminProductServiceImp implements AdminProductService {
     @Override
     public List<AdminProductDTO> getAllProducts() {
         List<Product> products = productRepository.findAll();

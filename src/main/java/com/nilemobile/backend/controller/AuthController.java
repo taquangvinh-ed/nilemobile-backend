@@ -7,7 +7,7 @@ import com.nilemobile.backend.reponse.AuthResponse;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.request.LoginRequest;
 import com.nilemobile.backend.service.CartService;
-import com.nilemobile.backend.service.CustomerUserServiceImplementation;
+import com.nilemobile.backend.service.impl.CustomerUserServiceImplementation;
 import com.nilemobile.backend.service.UserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

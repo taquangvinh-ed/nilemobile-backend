@@ -1,15 +1,21 @@
 package com.nilemobile.backend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "PAYMENT_DETAILS")
-public class PaymentDetails {
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "payment_details")
+public class PaymentDetails extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long paymentDetailsId;
 
     @OneToOne(mappedBy = "paymentDetails")
     private Order order;
@@ -33,116 +39,4 @@ public class PaymentDetails {
 
     private LocalDateTime transactionTime;
 
-    public PaymentDetails() {
-    }
-
-    public PaymentDetails(Long id,
-                          PaymentMethod paymentMethod,
-                          PaymentStatus status,
-                          String paymentId,
-                          String paymentUrl,
-                          String transactionRef,
-                          String transactionNo,
-                          Long amount,
-                          String responseCode,
-                          LocalDateTime transactionTime) {
-        this.id = id;
-        this.paymentMethod = paymentMethod;
-        this.status = status;
-        this.paymentId = paymentId;
-        this.paymentUrl = paymentUrl;
-        this.transactionRef = transactionRef;
-        this.transactionNo = transactionNo;
-        this.amount = amount;
-        this.responseCode = responseCode;
-        this.transactionTime = transactionTime;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public PaymentMethod getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public PaymentStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PaymentStatus status) {
-        this.status = status;
-    }
-
-    public String getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(String paymentId) {
-        this.paymentId = paymentId;
-    }
-
-    public String getPaymentUrl() {
-        return paymentUrl;
-    }
-
-    public void setPaymentUrl(String paymentUrl) {
-        this.paymentUrl = paymentUrl;
-    }
-
-    public String getTransactionRef() {
-        return transactionRef;
-    }
-
-    public void setTransactionRef(String transactionRef) {
-        this.transactionRef = transactionRef;
-    }
-
-    public String getTransactionNo() {
-        return transactionNo;
-    }
-
-    public void setTransactionNo(String transactionNo) {
-        this.transactionNo = transactionNo;
-    }
-
-    public Long getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Long amount) {
-        this.amount = amount;
-    }
-
-    public String getResponseCode() {
-        return responseCode;
-    }
-
-    public void setResponseCode(String responseCode) {
-        this.responseCode = responseCode;
-    }
-
-    public LocalDateTime getTransactionTime() {
-        return transactionTime;
-    }
-
-    public void setTransactionTime(LocalDateTime transactionTime) {
-        this.transactionTime = transactionTime;
-    }
 }

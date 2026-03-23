@@ -1,4 +1,4 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.CartItemException;
 import com.nilemobile.backend.model.Cart;
@@ -7,6 +7,8 @@ import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.model.Variation;
 import com.nilemobile.backend.repository.CartItemRepository;
 import com.nilemobile.backend.repository.CartRepository;
+import com.nilemobile.backend.service.CartItemService;
+import com.nilemobile.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

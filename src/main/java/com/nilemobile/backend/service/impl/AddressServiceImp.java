@@ -1,10 +1,11 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.AddressException;
 import com.nilemobile.backend.model.Address;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.repository.AddressRepository;
 import com.nilemobile.backend.repository.UserRepository;
+import com.nilemobile.backend.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AddressServiceImp implements AddressService{
+public class AddressServiceImp implements AddressService {
 
     @Autowired
     private AddressRepository addressRepository;

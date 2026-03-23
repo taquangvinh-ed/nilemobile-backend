@@ -1,4 +1,4 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.Review;
@@ -8,6 +8,7 @@ import com.nilemobile.backend.repository.ReviewRepository;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.repository.VariationRepository;
 import com.nilemobile.backend.request.CreateReviewRequest;
+import com.nilemobile.backend.service.ReviewService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

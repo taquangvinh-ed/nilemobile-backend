@@ -2,19 +2,25 @@ package com.nilemobile.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "CART")
-public class Cart {
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "carts")
+public class Cart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_id", length = 36)
+    @Column(length = 36)
     private Long cartId;
 
-    @Column(name = "subtotal", nullable = false)
+    @Column(nullable = false)
     private long subtotal;
 
     private Long totalDiscountPrice;
@@ -30,80 +36,4 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<CartItem> cartItems = new ArrayList<>();
-
-
-    public Long getCartId() {
-        return cartId;
-    }
-
-    public void setCartId(Long cartId) {
-        this.cartId = cartId;
-    }
-
-    public long getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(long subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<CartItem> getCartItems() {
-        return cartItems;
-    }
-
-    public void setCartItems(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
-    }
-
-    public Long getTotalDiscountPrice() {
-        return totalDiscountPrice;
-    }
-
-    public void setTotalDiscountPrice(Long totalDiscountPrice) {
-        this.totalDiscountPrice = totalDiscountPrice;
-    }
-
-    public int getTotalDiscountPercent() {
-        return totalDiscountPercent;
-    }
-
-    public void setTotalDiscountPercent(int totalDiscountPercent) {
-        this.totalDiscountPercent = totalDiscountPercent;
-    }
-
-    public int getTotalItems() {
-        return cartItems.stream()
-                .mapToInt(CartItem::getQuantity)
-                .sum();
-    }
-
-    public void setTotalItems(int totalItems) {
-        this.totalItems = totalItems;
-    }
-
-    public void calculateSubtotal() {
-        this.subtotal = cartItems.stream()
-                .mapToLong(CartItem::getSubtotal)
-                .sum();
-        this.totalDiscountPrice = cartItems.stream()
-                .mapToLong(CartItem::getDiscountPrice)
-                .sum();
-        if (!cartItems.isEmpty()) {
-            this.totalDiscountPercent = (int) (cartItems.stream()
-                    .mapToInt(item -> item.getVariation() != null ? item.getVariation().getDiscountPercent() : 0)
-                    .average()
-                    .orElse(0));
-        } else {
-            this.totalDiscountPercent = 0;
-        }
-    }
 }

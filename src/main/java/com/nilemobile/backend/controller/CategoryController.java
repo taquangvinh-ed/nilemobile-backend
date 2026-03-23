@@ -3,7 +3,7 @@ package com.nilemobile.backend.controller;
 import com.nilemobile.backend.model.Categories;
 import com.nilemobile.backend.reponse.CategoryDTO;
 import com.nilemobile.backend.request.CreateCategoryRequest;
-import com.nilemobile.backend.service.CategoryServiceImp;
+import com.nilemobile.backend.service.impl.CategoryServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

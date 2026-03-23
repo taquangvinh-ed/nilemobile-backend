@@ -1,34 +1,74 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.config.JwtProvider;
+import com.nilemobile.backend.exception.EmailAlreadyExisted;
+import com.nilemobile.backend.exception.ErrorCode;
+import com.nilemobile.backend.exception.PhoneNumberAlreadyExisted;
+import com.nilemobile.backend.mapper.UserMapper;
+import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.model.User;
+import com.nilemobile.backend.reponse.RegisterResponseDTO;
 import com.nilemobile.backend.reponse.UserProfileDTO;
+import com.nilemobile.backend.repository.CustomerRepository;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.request.ChangePasswordRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nilemobile.backend.request.CreateUserRequest;
+import com.nilemobile.backend.service.UserException;
+import com.nilemobile.backend.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImp implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
+    private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    JwtProvider jwtProvider;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Override
+    @Transactional
+    public RegisterResponseDTO registerUser(CreateUserRequest request) throws UserException {
 
-    public UserServiceImp(UserRepository userRepository, JwtProvider jwtProvider, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.jwtProvider = jwtProvider;
-        this.passwordEncoder = passwordEncoder;
+        Optional<User> existingUserByEmail = userRepository.findByEmail(request.getPhoneNumber());
+        if (existingUserByEmail.isPresent()) {
+            throw new EmailAlreadyExisted(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage());
+        }
+
+        Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(request.getPhoneNumber());
+        if (existingUserByPhoneNumber.isPresent()) {
+            throw new PhoneNumberAlreadyExisted(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS.getMessage());
+        }
+
+        // Map request to User entity (password ignored in mapper)
+        User newUser = userMapper.toEntity(request);
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        User savedUser = userRepository.save(newUser);
+
+        // Create associated Customer entity
+        Customer newCustomer = new Customer();
+        newCustomer.setFirstName(request.getFirstName());
+        newCustomer.setLastName(request.getLastName());
+        newCustomer.setUser(savedUser);
+        Customer savedCustomer = customerRepository.save(newCustomer);
+
+        // Build response DTO
+        RegisterResponseDTO response = new RegisterResponseDTO();
+        response.setUserId(savedUser.getUserId());
+        response.setFirstName(savedCustomer.getFirstName());
+        response.setLastName(savedCustomer.getLastName());
+        response.setEmail(savedUser.getEmail());
+        response.setPhoneNumber(savedUser.getPhoneNumber());
+
+        return response;
     }
-
 
     @Override
     public User findUserById(Long userID) throws UserException {
@@ -52,25 +92,26 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserProfileDTO updateProfile(Long userId, User user) {
+    public UserProfileDTO updateProfile(Long userId, User user) throws UserException {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User existingUser = optionalUser.get();
-            existingUser.setFirstName(user.getFirstName());
-            existingUser.setLastName(user.getLastName());
             existingUser.setEmail(user.getEmail());
             existingUser.setPhoneNumber(user.getPhoneNumber());
 
             User updatedUser = userRepository.save(existingUser);
+            
+            // Get customer info if exists
+            Customer customer = existingUser.getCustomer();
             return new UserProfileDTO(
                     updatedUser.getUserId(),
-                    updatedUser.getFirstName(),
-                    updatedUser.getLastName(),
+                    customer != null ? customer.getFirstName() : "",
+                    customer != null ? customer.getLastName() : "",
                     updatedUser.getEmail(),
                     updatedUser.getPhoneNumber()
             );
         } else {
-            throw new RuntimeException("User not found");
+            throw new UserException("User not found");
         }
     }
 
@@ -83,11 +124,16 @@ public class UserServiceImp implements UserService {
             throw new UserException("User profile information is incomplete");
         }
         User user = findUserById(userId);
-        user.setFirstName(userProfileDTO.getFirstName());
-        user.setLastName(userProfileDTO.getLastName());
         user.setEmail(userProfileDTO.getEmail());
         user.setPhoneNumber(userProfileDTO.getPhoneNumber());
-        user.setCreatedDateAt(user.getCreatedDateAt());
+        
+        // Update Customer if exists
+        if (user.getCustomer() != null) {
+            user.getCustomer().setFirstName(userProfileDTO.getFirstName());
+            user.getCustomer().setLastName(userProfileDTO.getLastName());
+            customerRepository.save(user.getCustomer());
+        }
+        
         return userRepository.save(user);
     }
 

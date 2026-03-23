@@ -1,17 +1,20 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.CartException;
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.*;
 import com.nilemobile.backend.repository.CartItemRepository;
 import com.nilemobile.backend.repository.CartRepository;
+import com.nilemobile.backend.service.CartItemService;
+import com.nilemobile.backend.service.CartService;
+import com.nilemobile.backend.service.ProductService;
+import com.nilemobile.backend.service.VariationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CartServiceImp implements CartService {

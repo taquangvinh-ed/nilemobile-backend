@@ -1,4 +1,4 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.Categories;
@@ -7,6 +7,8 @@ import com.nilemobile.backend.model.Variation;
 import com.nilemobile.backend.repository.CategoryRepository;
 import com.nilemobile.backend.repository.ProductRepository;
 import com.nilemobile.backend.request.CreateProductRequest;
+import com.nilemobile.backend.service.ProductService;
+import com.nilemobile.backend.service.UserService;
 import com.nilemobile.backend.specification.ProductSpecification;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.*;
