@@ -18,8 +18,6 @@ public class Categories extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long categoryId;
 
-    @NotNull
-    @Size(max = 50)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)

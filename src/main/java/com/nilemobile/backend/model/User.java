@@ -2,12 +2,13 @@ package com.nilemobile.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -15,8 +16,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "users")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
 
     @Id
     @Column(name = "user_id")
@@ -29,13 +32,20 @@ public class User extends BaseEntity{
 
     private String phoneNumber;
 
+    private boolean isExpired;
+
+    private boolean isLocked;
+
+    private boolean isEnabled;
+
     @ManyToOne
     @JoinColumn(name="roleId", nullable=false)
     private Role role;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne
     private Customer customer;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne
     private Admin admin;
+
 }

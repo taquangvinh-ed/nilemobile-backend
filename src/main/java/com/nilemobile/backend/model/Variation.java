@@ -1,12 +1,16 @@
 package com.nilemobile.backend.model;
 
+import com.nilemobile.backend.contant.DiscountType;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Entity
@@ -19,41 +23,29 @@ public class Variation extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long variationId;
 
-    @Column(name = "color", length = 20)
-    private String color;
+    @Type(JsonType.class)
+    @Column(columnDefinition = "json")
+    private Map<String, String> attributes;
 
-    @Column(name = "RAM", length = 20)
-    private String ram;
-
-    @Column(name = "ROM", length = 20)
-    private String rom;
-
-    @Column(name = "price", length = 1000)
-    private Long price;
-
-    @Column(name = "discountPrice", length = 1000)
-    private Long discountPrice;
-
-    @Column(name = "discountPercent", length = 1000)
-    private int discountPercent;
-
-    @Column(name = "stockQuantity", nullable = false)
-    private Integer stockQuantity;
-
-    @Column(name = "imageURL", length = 1000)
-    private String imageURL;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "productId", nullable = false)
     private Product product;
-
-    @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
-    private List<Review> reviews;
-
 
     @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
     private List<CartItem> cartItems;
 
     @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
+
+    @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
+    @Enumerated(EnumType.STRING)
+    private DiscountType discountType;
+
+    private Long discountPrice;
+
+    private Long discountPercentage;
+
+    private Long finalPrice;
 }

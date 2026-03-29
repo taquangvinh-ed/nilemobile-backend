@@ -1,5 +1,6 @@
 package com.nilemobile.backend.model;
 
+import com.nilemobile.backend.contant.DiscountType;
 import jakarta.persistence.*;
 
 @Entity
@@ -7,14 +8,21 @@ import jakarta.persistence.*;
 public class OrderDetail extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "orderDetail_id", length = 36)
     private Long orderDetailId;
+
+    private Long price;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "subtotal", nullable = false)
-    private Long subtotal;
+    @Enumerated(EnumType.STRING)
+    private DiscountType discountType;
+
+    private Long discountPrice;
+
+    private Long discountPercentage;
+
+    private Long finalPrice;
 
     @Column(name = "totalDiscountPrice", nullable = false)
     private Long totalDiscountPrice;
@@ -22,7 +30,6 @@ public class OrderDetail extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
-
 
     @ManyToOne
     @JoinColumn(name = "variation_id", nullable = false)

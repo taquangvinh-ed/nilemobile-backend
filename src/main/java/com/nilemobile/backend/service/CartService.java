@@ -9,24 +9,6 @@ import java.util.List;
 
 public interface CartService {
 
-    public Cart createCart(User user);
-
-//    public String addCartItem(Long userId, AddCartItemRequest addCartItemRequest) throws ProductException;
-
-    public Cart findUserCart(Long userId);
-
-
-    public void clearCart(Long userId) throws ProductException;
-
-    long calculateTotalPrice(Long cartId);
-
-    int getTotalItems(Long cartId);
-
-    long getTotalDiscount(Long cartId);
-
-    @Transactional
-    List<OrderDetail> convertCartToOrderDetails(Cart cart, Order order);
-
-    CartItem updateCartItem(CartItem cartItem);
+    public Cart createCart(Customer customer);
 
 }

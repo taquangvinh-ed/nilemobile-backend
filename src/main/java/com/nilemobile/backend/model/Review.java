@@ -19,9 +19,9 @@ public class Review extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewId;
 
-    @ManyToOne()
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "customerId")
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "variation_id")

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CreateUserRequest {
+public class CreateNewUserRequest {
     @NotBlank(message = "First name is required")
     @Size(max = 50, message = "First name must be at most 50 characters")
     private String firstName;
@@ -31,5 +31,7 @@ public class CreateUserRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
     private String password;
+
+
 
 }

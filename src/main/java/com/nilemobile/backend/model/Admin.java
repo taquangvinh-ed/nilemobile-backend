@@ -14,7 +14,9 @@ public class Admin extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer adminId;
+
     private String firstName;
+
     private String lastName;
 
     @OneToOne

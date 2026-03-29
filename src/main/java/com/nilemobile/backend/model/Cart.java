@@ -17,23 +17,12 @@ import java.util.List;
 public class Cart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(length = 36)
     private Long cartId;
 
-    @Column(nullable = false)
-    private long subtotal;
-
-    private Long totalDiscountPrice;
-
-    private int totalDiscountPercent;
-
-    private int totalItems;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @OneToOne
+    @JoinColumn(name = "customerId", nullable = false)
+    private Customer customer;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<CartItem> cartItems = new ArrayList<>();
 }

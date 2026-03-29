@@ -22,30 +22,19 @@ public class Order extends BaseEntity {
     @Column(name = "OrderDate", nullable = false)
     private LocalDateTime orderDate;
 
-    @Column(name = "TotalPrice", nullable = false)
-    private Long totalPrice;
-
-    @Column(name = "TotalDiscountPrice", nullable = false)
-    private Long totalDiscountPrice;
-
     @ManyToOne
-    @JoinColumn(name = "U_ID", nullable = false)
-    private User user;
+    @JoinColumn(name = "customerId", nullable = false)
+    private Customer customer;
+
+    private Long totalAmount;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
-    @OneToOne
-    @JoinColumn(name = "paymentDetail_id", referencedColumnName = "id")
-    private PaymentDetails paymentDetails;
-
     @ManyToOne
-    @JoinColumn(name = "addressId", referencedColumnName = "address_id")
+    @JoinColumn(name = "addressId")
     private Address shippingAddress;
 
-    private int totalItem;
-
-    @Column(name = "Status", length = 20, nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 

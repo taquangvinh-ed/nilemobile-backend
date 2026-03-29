@@ -1,12 +1,10 @@
 package com.nilemobile.backend.controller;
 
 import com.nilemobile.backend.model.Order;
-import com.nilemobile.backend.model.PaymentMethod;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.reponse.ErrorResponse;
 import com.nilemobile.backend.request.UpdatePaymentRequest;
 import com.nilemobile.backend.service.OrderService;
-import com.nilemobile.backend.service.PaymentDetailService;
 import com.nilemobile.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

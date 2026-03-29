@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Service
 public class JwtProvider {
-    SecretKey key = Keys.hmacShaKeyFor(JwtContant.SECRET_KEY.getBytes());
+    SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
 
     public String generateToken(Authentication authentication) {
         String jwt = Jwts.builder().setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 846000000)).claim("phoneNumber", authentication.getName()).signWith(key).compact();

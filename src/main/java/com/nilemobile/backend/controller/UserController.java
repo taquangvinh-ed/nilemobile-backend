@@ -2,16 +2,15 @@ package com.nilemobile.backend.controller;
 
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.reponse.ApiResponse;
-import com.nilemobile.backend.reponse.RegisterResponseDTO;
-import com.nilemobile.backend.reponse.UserProfileDTO;
+import com.nilemobile.backend.reponse.RegisterNewCustomerResponseDTO;
+import com.nilemobile.backend.reponse.UserDTO;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.request.ChangePasswordRequest;
-import com.nilemobile.backend.request.CreateUserRequest;
+import com.nilemobile.backend.request.CreateNewUserRequest;
 import com.nilemobile.backend.service.UserException;
 import com.nilemobile.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +31,7 @@ public class UserController {
 
 
     @PostMapping("/register")
-    ApiResponse<RegisterResponseDTO> register(@Validated @RequestBody CreateUserRequest request) {
+    ApiResponse<RegisterNewCustomerResponseDTO> register(@Validated @RequestBody CreateNewUserRequest request) {
         ApiResponse response = ApiResponse.builder()
                 .success(true)
                 .code(200)
@@ -43,30 +42,29 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserProfileDTO> getMyProfile() throws UserException {
+    public ApiResponse<UserDTO> getMyProfile(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNumber = authentication.getName();
-
+        Long user
         User user = userService.findByPhoneNumber(phoneNumber);
 
         if (user == null) {
             throw new UserException("Không tìm thấy thông tin của bạn");
         }
 
-        UserProfileDTO userProfileDTO = new UserProfileDTO();
-        userProfileDTO.setUserId(user.getUserId());
-        userProfileDTO.setLastName(user.getLastName());
-        userProfileDTO.setFirstName(user.getFirstName());
-        userProfileDTO.setEmail(user.getEmail());
-        userProfileDTO.setPhoneNumber(user.getPhoneNumber());
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(user.getUserId());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPhoneNumber(user.getPhoneNumber());
 
-        return ResponseEntity.ok(userProfileDTO);
+        return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable Long userId) throws UserException {
+    public ResponseEntity<UserDTO> getUserProfile(@PathVariable Long userId) throws UserException {
         User user = userService.findUserById(userId);
-        UserProfileDTO userProfileDTO = new UserProfileDTO(
+        UserDTO userDTO = new UserDTO(
                 user.getUserId(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -74,21 +72,21 @@ public class UserController {
                 user.getPhoneNumber(),
                 user.getCreatedDateAt().format(DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy"))
         );
-        return ResponseEntity.ok(userProfileDTO);
+        return ResponseEntity.ok(userDTO);
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserProfileDTO> updateUserProfile(@PathVariable Long userId, @RequestBody User user) throws UserException {
-        UserProfileDTO updatedUserProfile = userService.updateProfile(userId, user);
+    public ResponseEntity<UserDTO> updateUserProfile(@PathVariable Long userId, @RequestBody User user) throws UserException {
+        UserDTO updatedUserProfile = userService.updateProfile(userId, user);
         return ResponseEntity.ok(updatedUserProfile);
     }
 
     @GetMapping("/get-all-users")
-    public ResponseEntity<List<UserProfileDTO>> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
         List<User> users = userRepository.findAll();
-        List<UserProfileDTO> userProfiles = users.stream()
-                .map(user -> new UserProfileDTO(
+        List<UserDTO> userProfiles = users.stream()
+                .map(user -> new UserDTO(
                         user.getUserId(),
                         user.getFirstName(),
                         user.getLastName(),
@@ -100,11 +98,11 @@ public class UserController {
     }
 
     @PutMapping("/update-profile/{userId}")
-    public ResponseEntity<UserProfileDTO> updateUserProfile(
+    public ResponseEntity<UserDTO> updateUserProfile(
             @PathVariable Long userId,
-            @Valid @RequestBody UserProfileDTO userProfileDTO) throws UserException {
-        User updatedUser = userService.updateProfileUser(userId, userProfileDTO);
-        return ResponseEntity.ok(new UserProfileDTO(updatedUser));
+            @Valid @RequestBody UserDTO userDTO) throws UserException {
+        User updatedUser = userService.updateProfileUser(userId, userDTO);
+        return ResponseEntity.ok(new UserDTO(updatedUser));
     }
 
     @PostMapping("/change-password")
