@@ -27,15 +27,14 @@ public class Variation extends BaseEntity{
     @Column(columnDefinition = "json")
     private Map<String, String> attributes;
 
+    private int stockQuantity;
+
     @ManyToOne
     @JoinColumn(name = "productId", nullable = false)
     private Product product;
 
     @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
     private List<CartItem> cartItems;
-
-    @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
-    private List<OrderDetail> orderDetails;
 
     @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
     private List<Review> reviews;

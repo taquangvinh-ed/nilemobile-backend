@@ -15,6 +15,7 @@ public class Category extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long categoryId;
 
+    @Column(unique = true)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)

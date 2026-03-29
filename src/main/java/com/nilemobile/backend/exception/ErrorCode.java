@@ -58,8 +58,7 @@ public enum ErrorCode {
 
     //Category related errors
     ,CATEGORY_NOT_FOUND(10001, "Category not found")
-    ,CATEGORY_ALREADY_EXISTED(10002, "Category already existed")
-    ;
+    ,CATEGORY_ALREADY_EXISTED(10002, "Category already existed"),
 
     private final int code;
     private final String message;

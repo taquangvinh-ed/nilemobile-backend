@@ -23,6 +23,8 @@ public class Product extends BaseEntity {
 
     private String productName;
 
+    private String description;
+
     @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private Map<String, String> attributes;

@@ -3,6 +3,7 @@ package com.nilemobile.backend.service;
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.Product;
 import com.nilemobile.backend.model.Variation;
+import com.nilemobile.backend.reponse.ProductDTO;
 import com.nilemobile.backend.request.CreateProductRequest;
 import org.springframework.data.domain.Page;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    public Product createProduct(CreateProductRequest request);
+    public ProductDTO createProduct(CreateProductRequest request);
 
     public void deleteProduct(Long productId) throws ProductException;
 

@@ -31,9 +31,6 @@ public class OrderDetail extends BaseEntity{
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "variation_id", nullable = false)
-    private Variation variation;
 
 
 }
