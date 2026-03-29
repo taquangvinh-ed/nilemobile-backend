@@ -1,13 +1,17 @@
 package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.config.CustomUserDetails;
+import com.nilemobile.backend.exception.ErrorCode;
+import com.nilemobile.backend.exception.InvalidTokenException;
 import com.nilemobile.backend.service.JwtTokenService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -24,16 +28,17 @@ public class JwtTokeServiceImpl implements JwtTokenService {
 
     @Override
     public String generateToken(Authentication authentication) {
-        CustomUserDetails userDatails = (CustomUserDetails) authentication.getPrincipal();
-
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         SecretKey secretKey = getJwtSecretKey();
         String jwtToken = Jwts.builder()
                 .issuer("nilemobile")
-                .claim("userId", userDatails.getUserId())
-                .claim("authorities", userDatails.getAuthorities())
-                .setSubject(userDatails.getUsername())
+                .claim("userId", userDetails.getUserId())
+                .claim("authorities", userDetails.getAuthorities())
+                .setSubject(userDetails.getUsername())
                 .signWith(secretKey)
                 .compact();
+
+
         return jwtToken;
 
     }
@@ -41,6 +46,24 @@ public class JwtTokeServiceImpl implements JwtTokenService {
     @Override
     public SecretKey getJwtSecretKey() {
         return Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().verifyWith(getJwtSecretKey()).build().parseSignedClaims(token);
+            return true;
+        } catch (SignatureException
+                 | ExpiredJwtException
+                 | UnsupportedJwtException
+                 | IllegalArgumentException e) {
+            throw new InvalidTokenException(ErrorCode.INVALID_JWT.getMessage());
+        }
+    }
+
+    @Override
+    public Claims extractClaims(String token) {
+        return Jwts.parser().verifyWith(getJwtSecretKey()).build().parseSignedClaims(token).getPayload();
     }
 
 }

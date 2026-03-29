@@ -27,7 +27,7 @@ public class ProductResponseDTO {
         this.screenSize = product.getScreenSize();
         this.batteryCapacity = product.getBatteryCapacity();
         this.os = product.getOs();
-        this.categoryName = product.getCategories() != null ? product.getCategories().getName() : null;
+        this.categoryName = product.getCategory() != null ? product.getCategory().getName() : null;
         this.minPrice = product.getVariations().stream()
                 .mapToLong(Variation::getPrice).min().orElse(0L);
         this.stockQuantity = product.getVariations().stream()

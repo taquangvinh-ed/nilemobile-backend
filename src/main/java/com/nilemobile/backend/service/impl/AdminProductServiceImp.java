@@ -1,7 +1,7 @@
 package com.nilemobile.backend.service.impl;
 
 import com.nilemobile.backend.exception.ProductException;
-import com.nilemobile.backend.model.Categories;
+import com.nilemobile.backend.model.Category;
 import com.nilemobile.backend.model.Product;
 import com.nilemobile.backend.reponse.AdminProductDTO;
 import com.nilemobile.backend.repository.CategoryRepository;
@@ -24,9 +24,9 @@ public class AdminProductServiceImp implements AdminProductService {
                 .map(product -> new AdminProductDTO(
                         product.getId(),
                         product.getName(),
-                        product.getCategories().getParentCategory().getParentCategory().getName(),
-                        product.getCategories().getParentCategory().getName(),
-                        product.getCategories().getName(),
+                        product.getCategory().getParentCategory().getParentCategory().getName(),
+                        product.getCategory().getParentCategory().getName(),
+                        product.getCategory().getName(),
                         product.getVariations().size(),
                         product.getScreenSize(),
                         product.getDisplayTech(),
@@ -96,9 +96,9 @@ public class AdminProductServiceImp implements AdminProductService {
         product.setOs(adminProductDTO.getOs());
         product.setProductSize(adminProductDTO.getProductSize());
         product.setProductWeight(adminProductDTO.getProductWeight());
-        product.getCategories().getParentCategory().getParentCategory().setName(adminProductDTO.getCategory());
-        product.getCategories().getParentCategory().setName(adminProductDTO.getBrand());
-        product.getCategories().setName(adminProductDTO.getSeries());
+        product.getCategory().getParentCategory().getParentCategory().setName(adminProductDTO.getCategory());
+        product.getCategory().getParentCategory().setName(adminProductDTO.getBrand());
+        product.getCategory().setName(adminProductDTO.getSeries());
 
         return productRepository.save(product);
     }
@@ -126,20 +126,20 @@ public class AdminProductServiceImp implements AdminProductService {
         }
 
         String firstLevelName = request.getFirstLevel().trim();
-        Optional<Categories> firstLevelOpt = categoryRepository.findByName(firstLevelName);
-        Categories firstLevel = firstLevelOpt.orElseGet(() -> {
-            Categories newFirstLevel = new Categories();
+        Optional<Category> firstLevelOpt = categoryRepository.findByName(firstLevelName);
+        Category firstLevel = firstLevelOpt.orElseGet(() -> {
+            Category newFirstLevel = new Category();
             newFirstLevel.setName(firstLevelName);
             newFirstLevel.setLevel(1);
             return categoryRepository.save(newFirstLevel);
         });
 
         String secondLevelName = request.getSecondLevel() != null ? request.getSecondLevel().trim() : null;
-        Categories secondLevel = null;
+        Category secondLevel = null;
         if (secondLevelName != null && !secondLevelName.isEmpty()) {
-            Optional<Categories> secondLevelOpt = categoryRepository.findByNameAndParentCategory(secondLevelName, firstLevel);
+            Optional<Category> secondLevelOpt = categoryRepository.findByNameAndParentCategory(secondLevelName, firstLevel);
             secondLevel = secondLevelOpt.orElseGet(() -> {
-                Categories newSecondLevel = new Categories();
+                Category newSecondLevel = new Category();
                 newSecondLevel.setName(secondLevelName);
                 newSecondLevel.setLevel(2);
                 newSecondLevel.setParentCategory(firstLevel);
@@ -148,12 +148,12 @@ public class AdminProductServiceImp implements AdminProductService {
         }
 
         String thirdLevelName = request.getThirdLevel() != null ? request.getThirdLevel().trim() : null;
-        Categories thirdLevel = null;
+        Category thirdLevel = null;
         if (thirdLevelName != null && !thirdLevelName.isEmpty()) {
-            Categories parent = secondLevel != null ? secondLevel : firstLevel;
-            Optional<Categories> thirdLevelOpt = categoryRepository.findByNameAndParentCategory(thirdLevelName, parent);
+            Category parent = secondLevel != null ? secondLevel : firstLevel;
+            Optional<Category> thirdLevelOpt = categoryRepository.findByNameAndParentCategory(thirdLevelName, parent);
             thirdLevel = thirdLevelOpt.orElseGet(() -> {
-                Categories newThirdLevel = new Categories();
+                Category newThirdLevel = new Category();
                 newThirdLevel.setName(thirdLevelName);
                 newThirdLevel.setLevel(3);
                 newThirdLevel.setParentCategory(parent);
@@ -178,7 +178,7 @@ public class AdminProductServiceImp implements AdminProductService {
         product.setOs(request.getOs());
         product.setProductSize(request.getProductSize());
         product.setProductWeight(request.getProductWeight());
-        product.setCategories(thirdLevel != null ? thirdLevel : (secondLevel != null ? secondLevel : firstLevel));
+        product.setCategory(thirdLevel != null ? thirdLevel : (secondLevel != null ? secondLevel : firstLevel));
         product.setCreateAt(LocalDateTime.now());
 
         return productRepository.save(product);

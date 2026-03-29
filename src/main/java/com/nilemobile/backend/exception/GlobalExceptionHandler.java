@@ -117,6 +117,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidTokenException(InvalidTokenException ex) {
+        ErrorCode e = ErrorCode.INVALID_JWT;
+        ApiResponse<?> response = ApiResponse.builder()
+                .success(false)                .code(e.getCode())
+                .message(e.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
     /*
      * Handle AddressException
      */

@@ -1,21 +1,20 @@
 package com.nilemobile.backend.service.impl;
 
-import com.nilemobile.backend.config.CustomUserDetailsService;
 import com.nilemobile.backend.exception.*;
 import com.nilemobile.backend.mapper.UserMapper;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.reponse.UserDTO;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.request.CreateNewUserRequest;
+import com.nilemobile.backend.service.AuthService;
 import com.nilemobile.backend.service.JwtTokenService;
-import com.nilemobile.backend.service.UserException;
+import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +30,7 @@ public class UserServiceImp implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
-    private final CustomUserDetailsService customUserDetailsService;
-
+    private final AuthService authService;
 
     @Override
     @Transactional
@@ -56,10 +54,10 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public String login(String identifier, String password) {
+    public String login(HttpServletRequest request, String identifier, String password) {
             Authentication authentication = new UsernamePasswordAuthenticationToken(identifier, password);
             authentication = authenticationManager.authenticate(authentication);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            authService.setContextHolder( request, authentication);
             return jwtTokenService.generateToken(authentication);
     }
 

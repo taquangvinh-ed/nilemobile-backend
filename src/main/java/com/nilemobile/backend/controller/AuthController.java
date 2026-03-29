@@ -5,6 +5,7 @@ import com.nilemobile.backend.request.CreateNewUserRequest;
 import com.nilemobile.backend.request.LoginRequest;
 import com.nilemobile.backend.service.CustomerService;
 import com.nilemobile.backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,9 +25,9 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/customer/signup")
-    public ApiResponse<?> registerNewCustomer(@RequestBody CreateNewUserRequest request) {
+    public ApiResponse<?> registerNewCustomer(HttpServletRequest httpServletRequest,  @RequestBody CreateNewUserRequest request) {
         customerService.registerCustomer(request);
-        String jwt = userService.login(request.getPhoneNumber(), request.getPassword());
+        String jwt = userService.login(httpServletRequest, request.getPhoneNumber(), request.getPassword());
         return ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())
@@ -37,8 +38,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<?> login(@RequestBody LoginRequest loginRequest) {
-        String jwt = userService.login(loginRequest.getIdentifier(), loginRequest.getPassword());
+    public ApiResponse<?> login(HttpServletRequest httpServletRequest, @RequestBody LoginRequest loginRequest) {
+        String jwt = userService.login(httpServletRequest, loginRequest.getIdentifier(), loginRequest.getPassword());
         return ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())

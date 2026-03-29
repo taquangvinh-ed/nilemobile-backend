@@ -31,9 +31,9 @@ public class AdminProductDTO {
     public AdminProductDTO(Product product) {
         this.productId = product.getId();
         this.name = product.getName();
-        this.series = product.getCategories() != null ? product.getCategories().getName() : null;
-        this.brand = product.getCategories().getParentCategory() != null ? product.getCategories().getParentCategory().getName() : null;
-        this.category = product.getCategories().getParentCategory().getParentCategory() != null ? product.getCategories().getParentCategory().getParentCategory().getName() : null;
+        this.series = product.getCategory() != null ? product.getCategory().getName() : null;
+        this.brand = product.getCategory().getParentCategory() != null ? product.getCategory().getParentCategory().getName() : null;
+        this.category = product.getCategory().getParentCategory().getParentCategory() != null ? product.getCategory().getParentCategory().getParentCategory().getName() : null;
         this.variationsQuantity = product.getVariations().size();
         this.screenSize = product.getScreenSize();
         this.displayTech = product.getDisplayTech();

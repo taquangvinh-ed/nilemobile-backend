@@ -7,7 +7,7 @@ import com.nilemobile.backend.model.Order;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.reponse.OrderDTO;
 import com.nilemobile.backend.service.OrderService;
-import com.nilemobile.backend.service.UserException;
+import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

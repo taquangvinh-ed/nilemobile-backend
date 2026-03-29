@@ -50,7 +50,16 @@ public enum ErrorCode {
 
     // Server errors
     INTERNAL_SERVER_ERROR(9000, "An unexpected error occurred"),
-    VALIDATION_ERROR(9001, "Validation error");
+    VALIDATION_ERROR(9001, "Validation error"),
+
+
+    //Token related errors
+    INVLID_TOKEN(8004, "Invalid token")
+
+    //Category related errors
+    ,CATEGORY_NOT_FOUND(10001, "Category not found")
+    ,CATEGORY_ALREADY_EXISTED(10002, "Category already existed")
+    ;
 
     private final int code;
     private final String message;

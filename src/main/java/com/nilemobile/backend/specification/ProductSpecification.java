@@ -1,6 +1,6 @@
 package com.nilemobile.backend.specification;
 
-import com.nilemobile.backend.model.Categories;
+import com.nilemobile.backend.model.Category;
 import com.nilemobile.backend.model.Product;
 import com.nilemobile.backend.model.Variation;
 import jakarta.persistence.criteria.*;
@@ -32,7 +32,7 @@ public class ProductSpecification {
                 subPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), pattern));
 
                 // Tìm trong danh mục (categories)
-                Join<Product, Categories> categoryJoin = root.join("categories", JoinType.LEFT);
+                Join<Product, Category> categoryJoin = root.join("categories", JoinType.LEFT);
                 subPredicates.add(criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get("name")), pattern));
 
                 // Tìm trong mô tả (nếu có trường description)
@@ -120,10 +120,10 @@ public class ProductSpecification {
             }
 
             // Tham gia với bảng Categories (danh mục cấp 3)
-            Join<Product, Categories> categoryJoin = root.join("categories");
+            Join<Product, Category> categoryJoin = root.join("categories");
 
             // Tham gia với danh mục cha (danh mục cấp 2)
-            Join<Categories, Categories> parentCategoryJoin = categoryJoin.join("parentCategory");
+            Join<Category, Category> parentCategoryJoin = categoryJoin.join("parentCategory");
 
             // Kiểm tra danh mục cấp 2 (level = 2) và tên khớp với secondLevel
             List<Predicate> predicates = new ArrayList<>();
@@ -141,7 +141,7 @@ public class ProductSpecification {
             }
 
             // Tham gia với bảng Categories (danh mục cấp 3)
-            Join<Product, Categories> categoryJoin = root.join("categories");
+            Join<Product, Category> categoryJoin = root.join("categories");
 
             // Kiểm tra danh mục cấp 3 (level = 3) và tên khớp với thirdLevel
             List<Predicate> predicates = new ArrayList<>();

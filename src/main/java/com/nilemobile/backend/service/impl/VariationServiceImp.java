@@ -45,8 +45,8 @@ public class VariationServiceImp implements VariationService {
                 map(variation -> new VariationDTO2(
                         variation.getId(),
                         variation.getProduct().getName(),
-                        variation.getProduct().getCategories().getName(),
-                        variation.getProduct().getCategories().getParentCategory().getName(),
+                        variation.getProduct().getCategory().getName(),
+                        variation.getProduct().getCategory().getParentCategory().getName(),
                         variation.getColor(),
                         variation.getRam(),
                         variation.getRom(),

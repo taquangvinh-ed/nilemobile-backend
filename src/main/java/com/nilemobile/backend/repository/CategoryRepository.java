@@ -1,7 +1,6 @@
 package com.nilemobile.backend.repository;
 
-import com.nilemobile.backend.model.Categories;
-import com.nilemobile.backend.reponse.CategoryDTO;
+import com.nilemobile.backend.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,21 +10,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Categories, Long> {
-    Optional<Categories> findByName(String name);
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Optional<Category> findByName(String name);
 
     @Query("SELECT c FROM Categories c WHERE c.level = :level")
-    List<Categories> findByLevel(int level);
+    List<Category> findByLevel(int level);
 
     @Query("SELECT c.categories_id FROM Categories c WHERE c.name = :name")
     List<Long> findParentIdsByName(String name);
 
     @Query("SELECT c FROM Categories c WHERE c.name = :name AND c.level = 2")
-    Optional<Categories> findBrandByNameAndLevel(@Param("name") String name);
+    Optional<Category> findBrandByNameAndLevel(@Param("name") String name);
 
     @Query("SELECT c FROM Categories c WHERE c.name = :name AND c.parentCategory = :parent")
-    Optional<Categories> findByNameAndParentCategory(@Param("name") String name, @Param("parent") Categories parentCategory);
+    Optional<Category> findByNameAndParentCategory(@Param("name") String name, @Param("parent") Category parentCategory);
 
     @Query("SELECT c FROM Categories c WHERE c.parentCategory = :parent")
-    List<Categories> findByParentCategory(@Param("parent") Categories parentCategory);
+    List<Category> findByParentCategory(@Param("parent") Category parentCategory);
 }

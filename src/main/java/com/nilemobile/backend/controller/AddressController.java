@@ -5,7 +5,7 @@ import com.nilemobile.backend.model.Address;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.reponse.AddressDTO;
 import com.nilemobile.backend.service.AddressService;
-import com.nilemobile.backend.service.UserException;
+import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

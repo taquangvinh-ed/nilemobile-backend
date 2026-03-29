@@ -7,7 +7,7 @@ import com.nilemobile.backend.reponse.UserDTO;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.request.ChangePasswordRequest;
 import com.nilemobile.backend.request.CreateNewUserRequest;
-import com.nilemobile.backend.service.UserException;
+import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

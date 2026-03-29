@@ -1,4 +1,4 @@
-package com.nilemobile.backend.service;
+package com.nilemobile.backend.exception;
 
 public class UserException extends RuntimeException {
 

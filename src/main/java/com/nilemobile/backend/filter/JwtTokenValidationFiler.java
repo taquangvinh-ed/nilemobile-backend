@@ -1,9 +1,11 @@
 package com.nilemobile.backend.filter;
 
 import com.nilemobile.backend.config.CustomUserDetails;
+import com.nilemobile.backend.config.CustomUserDetailsService;
 import com.nilemobile.backend.exception.ErrorCode;
 import com.nilemobile.backend.exception.ExpiredJwtException;
 import com.nilemobile.backend.model.User;
+import com.nilemobile.backend.service.AuthService;
 import com.nilemobile.backend.service.JwtTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -17,9 +19,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
@@ -32,43 +36,35 @@ import java.util.stream.Collectors;
 public class JwtTokenValidationFiler extends OncePerRequestFilter {
 
     private final JwtTokenService jwtTokenService;
+    private final AuthService authService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader("Authorization");
-        if (jwt != null && jwt.startsWith("Bearer ")) {
-            jwt = jwt.substring(7);
-            SecretKey key = jwtTokenService.getJwtSecretKey();
+        String authHeader = request.getHeader("Authorization");
+        String jwt = null;
+        String username = null;
 
-            try {
-                Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
-                
-                Long userId = claims.get("userId", Long.class);
-                List<String> authorities = claims.get("authorities", List.class);
-                List<GrantedAuthority> grantedAuthorities = authorities.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .map(GrantedAuthority.class::cast)
-                        .collect(Collectors.toList());
-
-                User user = new User();
-                user.setUserId(userId);
-                CustomUserDetails userDetails = new CustomUserDetails(user);
-                SecurityContextHolder.getContext().setAuthentication(
-                    new UsernamePasswordAuthenticationToken(userDetails, null, grantedAuthorities)
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+            jwtTokenService.validateToken(jwt);
+            Claims claims = jwtTokenService.extractClaims(jwt);
+            username = claims.getSubject();
+        }
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
                 );
-                
-            } catch (ExpiredJwtException e) {
-                SecurityContextHolder.clearContext();
-                throw new ExpiredJwtException(ErrorCode.JWT_EXPIRED.getMessage());
-            } catch (JwtException e) {
-                log.warn("JWT signature validation failed or invalid: {}", e.getMessage());
-                SecurityContextHolder.clearContext();
-            } catch (Exception e) {
-                log.error("JWT validation error: {}", e.getMessage());
-                SecurityContextHolder.clearContext();
+                authService.setContextHolder(request, authentication);
             }
+        filterChain.doFilter(request, response);
         }
 
-        filterChain.doFilter(request, response);
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getRequestURI().startsWith("/api/v1/auth");
     }
 }
