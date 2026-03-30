@@ -61,7 +61,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ApiResponse<?> getProductById(@PathVariable Long productId) {
-        var product = productService.getProductById(productId);
+        var product = productService.getProductWithVariationsAndMethodById(productId);
         return ApiResponse.builder()
                 .success(true)
                 .code(SuccessCode.GET_SUCCESS.getCode())

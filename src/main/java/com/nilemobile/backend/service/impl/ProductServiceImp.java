@@ -86,11 +86,7 @@ public class ProductServiceImp implements ProductService {
     @Transactional
     @Override
     public ProductDTO updateProduct(Long productId, UpdateProductRequest request) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductException(
-                        ErrorCode.PRODUCT_NOT_FOUND
-                ));
-        
+        Product product = findProductById(productId);
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new ProductException(
@@ -120,25 +116,37 @@ public class ProductServiceImp implements ProductService {
     @Transactional
     @Override
     public void deleteProductSoftly(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductException(
-                        ErrorCode.PRODUCT_NOT_FOUND
-                ));
+        Product product = findProductById(productId);
         product.setDeleted(true);
         productRepository.save(product);
     }
 
     @Override
-    public ProductDTO getProductById(Long productId) {
+    public ProductDTO getProductWithVariationsAndMethodById(Long productId) {
         if (productId == null || productId <= 0) {
             throw new ProductException(ErrorCode.INVALID_PRODUCT, "Product ID must be positive");
         }
         
-        Product product = productRepository.findById(productId)
+        var product = productRepository.findProductWithVariationsAndCategoryById(productId);
+        if (product.isEmpty()) {
+            throw new ProductException(
+                    ErrorCode.PRODUCT_NOT_FOUND
+            );
+        }
+        return productMapper.toDto(product.get());
+    }
+
+
+    @Override
+    public Product findProductById(Long productId) {
+        if (productId == null || productId <= 0) {
+            throw new ProductException(ErrorCode.INVALID_PRODUCT, "Product ID must be positive");
+        }
+
+        return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(
                         ErrorCode.PRODUCT_NOT_FOUND
                 ));
-        return productMapper.toDto(product);
     }
 
     @Override

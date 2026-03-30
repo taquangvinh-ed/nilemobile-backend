@@ -1,60 +1,71 @@
 package com.nilemobile.backend.controller;
 
-import com.nilemobile.backend.exception.ProductException;
-import com.nilemobile.backend.exception.VariationException;
-import com.nilemobile.backend.model.Variation;
+import com.nilemobile.backend.contant.SuccessCode;
 import com.nilemobile.backend.dto.VariationDTO;
-import com.nilemobile.backend.request.CreateVariationRequest;
+import com.nilemobile.backend.dto.reponse.ApiResponse;
 import com.nilemobile.backend.service.VariationService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/admin/variation")
+@RequestMapping("/api/v1/variations")
+@RequiredArgsConstructor
 public class VariationController {
-    private VariationService variationService;
 
-    public VariationController(VariationService variationService) {
-        this.variationService = variationService;
+    private final VariationService variationService;
+
+    @PostMapping
+    public ApiResponse<?> createVariation(@RequestParam Long productId, @Valid @RequestBody VariationDTO request){
+        var createdVariation = variationService.createVariation(productId, request);
+        return ApiResponse.builder()
+                .success(true)
+                .code(SuccessCode.CREATE_SUCCESS.getCode())
+                .message(SuccessCode.CREATE_SUCCESS.getMessage())
+                .body(createdVariation)
+                .build();
     }
 
-    @GetMapping("/get-all")
-    public ResponseEntity<List<VariationDTO2>> getAllVariations(){
-        List<VariationDTO2> variations = variationService.getAllVariations();
-        return ResponseEntity.ok(variations);
+    @PutMapping
+    public ApiResponse<?> updateVariation(@RequestParam Long variationId, @Valid @RequestBody VariationDTO request){
+        var updatedVariation = variationService.updateVariation(variationId, request);
+        return ApiResponse.builder()
+                .success(true)
+                .code(SuccessCode.UPDATE_SUCCESS.getCode())
+                .message(SuccessCode.UPDATE_SUCCESS.getMessage())
+                .body(updatedVariation)
+                .build();
     }
 
-    @GetMapping("/id/{variationId}")
-    public ResponseEntity<VariationDTO> getVariationById(@PathVariable Long variationId) throws VariationException{
-        Variation variation = variationService.findVariationById(variationId);
-        VariationDTO variationDTO = new VariationDTO(variation);
-        return ResponseEntity.ok(variationDTO);
+    @DeleteMapping("/{variationId}")
+    public ApiResponse<?> deleteVariation(@PathVariable Long variationId) {
+        variationService.deleteVariation(variationId);
+        return ApiResponse.builder()
+                .success(true)
+                .code(SuccessCode.DELETE_SUCCESS.getCode())
+                .message(SuccessCode.DELETE_SUCCESS.getMessage())
+                .build();
     }
 
-    @GetMapping("/productId/{productId}")
-    public List<VariationDTO> getVariationsByProductId(@PathVariable Long productId) throws VariationException {
-        return variationService.getVariationsByProductId(productId);
+    @DeleteMapping("/soft/{variationId}")
+    public ApiResponse<?> deleteVariationSoft(@PathVariable Long variationId) {
+        variationService.deleteVariationSoft(variationId);
+        return ApiResponse.builder()
+                .success(true)
+                .code(SuccessCode.DELETE_SUCCESS.getCode())
+                .message(SuccessCode.DELETE_SUCCESS.getMessage())
+                .build();
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<VariationDTO> createVariation(@Valid @RequestBody CreateVariationRequest request) throws ProductException {
-        Variation variation = variationService.createVariation(request);
-        VariationDTO variationDTO = new VariationDTO(variation);
-        return ResponseEntity.status(HttpStatus.CREATED).body(variationDTO);
-    }
+    @GetMapping("/product/{productId}")
+    public ApiResponse<?> getVariationsByProductId(@PathVariable Long productId) {
+        var variations = variationService.getAllVariationsByProductId(productId);
+        return ApiResponse.builder()
+                .success(true)
+                .code(SuccessCode.GET_SUCCESS.getCode())
+                .message(SuccessCode.GET_SUCCESS.getMessage())
+                .body(variations)
+                .build();
 
-    @PutMapping("/update/{variationId}")
-    public ResponseEntity<VariationDTO> updateVariation(@PathVariable Long variationId, @Valid @RequestBody VariationDTO variationDTO) throws VariationException {
-        Variation updatedVariation = variationService.updateVariation(variationId, variationDTO);
-        return ResponseEntity.ok(new VariationDTO(updatedVariation));
-    }
-
-    @DeleteMapping("/delete/id/{variationId}")
-    public void deleteVariation(@PathVariable Long variationId) {
-        variationService.deleteVariationById(variationId);
     }
 }

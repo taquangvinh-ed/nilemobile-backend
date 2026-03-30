@@ -10,11 +10,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
+   Optional<Product> findProductWithVariationsAndCategoryById(Long productId);
+
    Page<Product> findByCategory_NameAndIsDeleted(String categoryName, boolean deleted, Pageable pageable);
 
    Page<Product> findByCategory_Name(String categoryName, Pageable pageable);
+
+
 }

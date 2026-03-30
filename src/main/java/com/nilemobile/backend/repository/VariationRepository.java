@@ -10,4 +10,6 @@ import java.util.List;
 public interface VariationRepository extends JpaRepository<Variation, Long> {
     public List<Variation> findByProduct(Product product);
     List<VariationDTO> findByProductId(Long productId);
+
+    List<Variation> findByProduct_ProductIdAndIsDeletedFalse(Long productId);
 }

@@ -23,6 +23,8 @@ public class Variation extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long variationId;
 
+    private String variationName;
+
     @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private Map<String, String> attributes;
@@ -47,4 +49,6 @@ public class Variation extends BaseEntity{
     private Long discountPercentage;
 
     private Long finalPrice;
+
+    private boolean isDeleted = false;
 }
