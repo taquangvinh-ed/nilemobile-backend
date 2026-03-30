@@ -1,52 +1,25 @@
 package com.nilemobile.backend.service;
 
-import com.nilemobile.backend.exception.ProductException;
-import com.nilemobile.backend.model.Product;
-import com.nilemobile.backend.model.Variation;
-import com.nilemobile.backend.reponse.ProductDTO;
-import com.nilemobile.backend.request.CreateProductRequest;
+import com.nilemobile.backend.dto.ProductDTO;
+import com.nilemobile.backend.dto.request.CreateProductRequest;
+import com.nilemobile.backend.dto.request.UpdateProductRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
 
 public interface ProductService {
 
-    public ProductDTO createProduct(CreateProductRequest request);
+    ProductDTO createProduct(CreateProductRequest request);
 
-    public void deleteProduct(Long productId) throws ProductException;
+    ProductDTO updateProduct(Long productId, UpdateProductRequest request);
 
-    public Product updateProduct(Long productId, Product updatedProduct) throws ProductException;
+    void deleteProduct(Long productId);
 
-    public Product findProductById(Long id) throws ProductException;
+    @Transactional
+    void deleteProductSoftly(Long productId);
 
+    ProductDTO getProductById(Long productId);
 
-    public Product addVariation(Long productId, Variation variation) throws ProductException;
+    Page<ProductDTO> getAllProductsByCategory(String categoryName, int page, int size);
 
-    public List<Product> findProductsByVariation(String ram, String rom, String color) throws ProductException;
-
-    public List<Product> findProductsByCategory(String categoryID);
-
-    public Variation updateVariation(Long productId, Long variationId, Variation updatedVariation) throws ProductException;
-
-    public void deleteVariation(Long productId, Long variationId) throws ProductException;
-
-
-    public Page<Product> getAllProducts(String firstLevel, String secondLevel, String thirdLevel,
-                                        List<String> ram, List<String> rom, String os,
-                                        Integer minBattery, Integer maxBattery, Float minScreenSize, Float maxScreenSize,
-                                        Long minPrice, Long maxPrice, Integer minDiscount, String sort,
-                                        Integer pageNumber, Integer pageSize);
-
-    List<String> getAllThirdLevels();
-
-    List<String> getAllSecondLevels();
-
-    List<String> getThirdLevels(String secondLevel);
-
-    Page<Product> filterByPriceBatteryAndScreenSize(
-            String keyword,
-            Integer minBattery, Integer maxBattery,
-            Float minScreenSize, Float maxScreenSize,
-            Long minPrice, Long maxPrice, String secondLevel, String thirdLevel,
-            String sort, Integer pageNumber, Integer pageSize);
+    Page<ProductDTO> getProductsByCategory(String categoryName, int page, int size);
 }

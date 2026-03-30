@@ -1,8 +1,8 @@
 package com.nilemobile.backend.controller;
 
-import com.nilemobile.backend.reponse.ApiResponse;
-import com.nilemobile.backend.request.CreateNewUserRequest;
-import com.nilemobile.backend.request.LoginRequest;
+import com.nilemobile.backend.dto.reponse.ApiResponse;
+import com.nilemobile.backend.dto.request.CreateNewUserRequest;
+import com.nilemobile.backend.dto.request.LoginRequest;
 import com.nilemobile.backend.service.CustomerService;
 import com.nilemobile.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,12 +1,11 @@
 package com.nilemobile.backend.service.impl;
 
-import com.nilemobile.backend.dto.CustomerDTO;
 import com.nilemobile.backend.mapper.CustomerMapper;
 import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.model.User;
-import com.nilemobile.backend.reponse.RegisterNewCustomerResponseDTO;
+import com.nilemobile.backend.dto.RegisterNewCustomerResponseDTO;
 import com.nilemobile.backend.repository.CustomerRepository;
-import com.nilemobile.backend.request.CreateNewUserRequest;
+import com.nilemobile.backend.dto.request.CreateNewUserRequest;
 import com.nilemobile.backend.service.CartService;
 import com.nilemobile.backend.service.CustomerService;
 import com.nilemobile.backend.service.UserService;

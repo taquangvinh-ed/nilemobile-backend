@@ -2,11 +2,7 @@ package com.nilemobile.backend.service;
 
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.*;
-import com.nilemobile.backend.reponse.CartDTO;
-import com.nilemobile.backend.request.AddCartItemRequest;
-import jakarta.transaction.Transactional;
-
-import java.util.List;
+import com.nilemobile.backend.dto.CartDTO;
 
 public interface CartService {
 

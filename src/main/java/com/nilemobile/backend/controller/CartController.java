@@ -2,9 +2,9 @@ package com.nilemobile.backend.controller;
 
 import com.nilemobile.backend.model.Cart;
 import com.nilemobile.backend.model.User;
-import com.nilemobile.backend.reponse.CartDTO;
-import com.nilemobile.backend.reponse.CartItemDTO;
-import com.nilemobile.backend.reponse.VariationDTO;
+import com.nilemobile.backend.dto.CartDTO;
+import com.nilemobile.backend.dto.CartItemDTO;
+import com.nilemobile.backend.dto.VariationDTO;
 import com.nilemobile.backend.service.CartService;
 import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.service.UserService;

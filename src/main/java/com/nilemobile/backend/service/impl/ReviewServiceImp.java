@@ -7,7 +7,7 @@ import com.nilemobile.backend.model.Variation;
 import com.nilemobile.backend.repository.ReviewRepository;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.repository.VariationRepository;
-import com.nilemobile.backend.request.CreateReviewRequest;
+import com.nilemobile.backend.dto.request.CreateReviewRequest;
 import com.nilemobile.backend.service.ReviewService;
 import org.springframework.stereotype.Service;
 

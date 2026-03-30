@@ -25,6 +25,8 @@ public class Product extends BaseEntity {
 
     private String description;
 
+    private boolean isDeleted = false;
+
     @Type(JsonType.class)
     @Column(columnDefinition = "json")
     private Map<String, String> attributes;
@@ -33,7 +35,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Variation> variations = new ArrayList<>();
 
 }

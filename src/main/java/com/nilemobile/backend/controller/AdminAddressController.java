@@ -1,7 +1,7 @@
 package com.nilemobile.backend.controller;
 
 import com.nilemobile.backend.model.Address;
-import com.nilemobile.backend.reponse.AddressDTO;
+import com.nilemobile.backend.dto.AddressDTO;
 import com.nilemobile.backend.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

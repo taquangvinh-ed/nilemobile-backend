@@ -3,10 +3,9 @@ package com.nilemobile.backend.service;
 import com.nilemobile.backend.config.VNPayConfig;
 import com.nilemobile.backend.contant.OrderStatus;
 import com.nilemobile.backend.model.Order;
-import com.nilemobile.backend.reponse.PaymentDTO;
+import com.nilemobile.backend.dto.PaymentDTO;
 import com.nilemobile.backend.util.VNPayUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

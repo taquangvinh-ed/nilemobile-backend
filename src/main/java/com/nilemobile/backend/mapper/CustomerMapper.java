@@ -3,7 +3,7 @@ package com.nilemobile.backend.mapper;
 import com.nilemobile.backend.dto.CustomerDTO;
 import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.model.User;
-import com.nilemobile.backend.reponse.RegisterNewCustomerResponseDTO;
+import com.nilemobile.backend.dto.RegisterNewCustomerResponseDTO;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)

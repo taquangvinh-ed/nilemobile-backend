@@ -2,8 +2,8 @@ package com.nilemobile.backend.service;
 
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.Product;
-import com.nilemobile.backend.reponse.AdminProductDTO;
-import com.nilemobile.backend.request.AdminCreateProductRequest;
+import com.nilemobile.backend.dto.AdminProductDTO;
+import com.nilemobile.backend.dto.request.AdminCreateProductRequest;
 
 import java.util.List;
 

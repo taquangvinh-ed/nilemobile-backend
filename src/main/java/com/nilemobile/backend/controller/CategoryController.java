@@ -1,15 +1,11 @@
 package com.nilemobile.backend.controller;
 
 import com.nilemobile.backend.contant.SuccessCode;
-import com.nilemobile.backend.model.Category;
-import com.nilemobile.backend.reponse.ApiResponse;
-import com.nilemobile.backend.reponse.CategoryDTO;
-import com.nilemobile.backend.request.CreateCategoryRequest;
+import com.nilemobile.backend.dto.reponse.ApiResponse;
+import com.nilemobile.backend.dto.CategoryDTO;
+import com.nilemobile.backend.dto.request.CreateCategoryRequest;
 import com.nilemobile.backend.service.CategoryService;
-import com.nilemobile.backend.service.impl.CategoryServiceImp;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

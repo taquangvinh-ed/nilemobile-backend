@@ -3,16 +3,14 @@ package com.nilemobile.backend.controller;
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.Product;
 import com.nilemobile.backend.reponse.ProductResponseDTO;
-import com.nilemobile.backend.request.CreateProductRequest;
+import com.nilemobile.backend.dto.request.CreateProductRequest;
 import com.nilemobile.backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.PrivateKey;
 import java.util.List;
 
 @RestController

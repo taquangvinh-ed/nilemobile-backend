@@ -3,7 +3,7 @@ package com.nilemobile.backend.service;
 import com.nilemobile.backend.exception.ProductException;
 import com.nilemobile.backend.model.Review;
 import com.nilemobile.backend.model.Variation;
-import com.nilemobile.backend.request.CreateReviewRequest;
+import com.nilemobile.backend.dto.request.CreateReviewRequest;
 
 import java.util.List;
 

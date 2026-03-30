@@ -11,6 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Optional<Category> findByName(String name);
+
     Optional<Category> findByNameAndLevel(String name, int level);
 
     @Query("SELECT c FROM Categories c WHERE c.level = :level")

@@ -1,9 +1,8 @@
 package com.nilemobile.backend.controller;
 
-import com.nilemobile.backend.reponse.PaymentDTO;
+import com.nilemobile.backend.dto.PaymentDTO;
 import com.nilemobile.backend.service.VNPayService;
 import com.nilemobile.backend.util.VNPayUtil;
-import com.sun.net.httpserver.Authenticator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;

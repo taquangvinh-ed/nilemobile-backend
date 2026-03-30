@@ -1,8 +1,9 @@
 package com.nilemobile.backend.mapper;
 
+import com.nilemobile.backend.dto.request.UpdateProductRequest;
 import com.nilemobile.backend.model.Product;
-import com.nilemobile.backend.reponse.ProductDTO;
-import com.nilemobile.backend.request.CreateProductRequest;
+import com.nilemobile.backend.dto.ProductDTO;
+import com.nilemobile.backend.dto.request.CreateProductRequest;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
@@ -18,6 +19,6 @@ public interface ProductMapper {
 
     ProductDTO toDto(Product product);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Product partialUpdate(ProductDTO productDTO, @MappingTarget Product product);
+    @Mapping(target = "category", ignore = true)
+    Product partialUpdate(UpdateProductRequest request, @MappingTarget Product product);
 }

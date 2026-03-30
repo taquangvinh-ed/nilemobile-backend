@@ -2,9 +2,9 @@ package com.nilemobile.backend.controller;
 
 import com.nilemobile.backend.exception.Orderexception;
 import com.nilemobile.backend.model.Order;
-import com.nilemobile.backend.reponse.AdminOrderDTO;
-import com.nilemobile.backend.reponse.OrderDetailDTO;
-import com.nilemobile.backend.reponse.OrderStatusDTO;
+import com.nilemobile.backend.dto.AdminOrderDTO;
+import com.nilemobile.backend.dto.OrderDetailDTO;
+import com.nilemobile.backend.dto.OrderStatusDTO;
 import com.nilemobile.backend.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

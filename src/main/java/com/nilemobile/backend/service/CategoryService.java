@@ -1,8 +1,7 @@
 package com.nilemobile.backend.service;
 
-import com.nilemobile.backend.model.Category;
-import com.nilemobile.backend.reponse.CategoryDTO;
-import com.nilemobile.backend.request.CreateCategoryRequest;
+import com.nilemobile.backend.dto.CategoryDTO;
+import com.nilemobile.backend.dto.request.CreateCategoryRequest;
 
 import java.util.List;
 

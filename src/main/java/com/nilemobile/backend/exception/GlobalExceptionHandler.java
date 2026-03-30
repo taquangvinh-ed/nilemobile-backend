@@ -1,6 +1,6 @@
 package com.nilemobile.backend.exception;
 
-import com.nilemobile.backend.reponse.ApiResponse;
+import com.nilemobile.backend.dto.reponse.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

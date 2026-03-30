@@ -1,8 +1,8 @@
 package com.nilemobile.backend.mapper;
 
 import com.nilemobile.backend.model.Category;
-import com.nilemobile.backend.reponse.CategoryDTO;
-import com.nilemobile.backend.request.CreateCategoryRequest;
+import com.nilemobile.backend.dto.CategoryDTO;
+import com.nilemobile.backend.dto.request.CreateCategoryRequest;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
