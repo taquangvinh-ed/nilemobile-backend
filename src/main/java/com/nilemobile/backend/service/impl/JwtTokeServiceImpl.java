@@ -1,6 +1,5 @@
 package com.nilemobile.backend.service.impl;
 
-import com.nilemobile.backend.config.CustomUserDetails;
 import com.nilemobile.backend.exception.ErrorCode;
 import com.nilemobile.backend.exception.InvalidTokenException;
 import com.nilemobile.backend.service.JwtTokenService;

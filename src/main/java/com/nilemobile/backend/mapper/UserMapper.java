@@ -6,11 +6,15 @@ import com.nilemobile.backend.dto.request.CreateNewUserRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target = "password", ignore = true) // Ignore password field during mapping
+    @Mapping(target = "pwdHash", ignore = true) // Ignore password field during mapping
     User toEntity(CreateNewUserRequest request);
     
     UserDTO toDTO(User user);
+
+    List<UserDTO> toDTOList(List<User> users);
 }

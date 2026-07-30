@@ -1,81 +1,67 @@
 package com.nilemobile.backend.service.impl;
 
+import com.nilemobile.backend.dto.AddressDTO;
+import com.nilemobile.backend.dto.request.AddAddressRequest;
 import com.nilemobile.backend.exception.AddressException;
+import com.nilemobile.backend.exception.CustomerNotFoundException;
+import com.nilemobile.backend.mapper.AddressMapper;
 import com.nilemobile.backend.model.Address;
-import com.nilemobile.backend.model.User;
+import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.repository.AddressRepository;
-import com.nilemobile.backend.repository.UserRepository;
+import com.nilemobile.backend.repository.CustomerRepository;
 import com.nilemobile.backend.service.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AddressServiceImp implements AddressService {
 
-    @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final AddressMapper addressMapper;
+    private final CustomerRepository customerRepository;
 
     @Override
-    public List<Address> getAddressesByUserId(Long userId) throws AddressException {
-        Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new AddressException("User not found with id: " + userId);
-        }
-        User user = userOpt.get();
-        return user.getAddresses();
+    public List<AddressDTO> getAddressesByCustomerId(Long customerId) throws AddressException {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new AddressException("Customer not found with id: " + customerId));
+        return addressMapper.toDtoList(addressRepository.findByCustomer(customer));
     }
 
     @Override
-    public Address addAddress(Address address, Long userId) throws AddressException {
-        Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new AddressException("User not found with id: " + userId);
-        }
-        User user = userOpt.get();
-        address.setUser(user);
-        return addressRepository.save(address);
+    public AddressDTO addAddress(AddAddressRequest request, Long customerId) throws AddressException {
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + customerId));
+
+        Address address = addressMapper.requestToEntity(request);
+        address.setCustomer(customer);
+
+        Address savedAddress = addressRepository.save(address);
+        return addressMapper.toDto(savedAddress);
     }
 
     @Override
-    public Address updateAddress(Address address, Long userId) throws AddressException {
-        Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new AddressException("User not found with id: " + userId);
-        }
-        User user = userOpt.get();
-        address.setUser(user);
-        Optional<Address> existingAddressOpt = addressRepository.findById(address.getAddressId());
+    public AddressDTO updateAddress(AddressDTO addressDTO, Long addressId) throws AddressException {
+
+        Optional<Address> existingAddressOpt = addressRepository.findById(addressId);
         if (existingAddressOpt.isEmpty()) {
-            throw new AddressException("Address not found with id: " + address.getAddressId());
-        }
-        Address existingAddress = existingAddressOpt.get();
-        if (!existingAddress.getUser().getUserId().equals(userId)) {
-            throw new AddressException("Address does not belong to the user");
-        }
-        return addressRepository.save(address);
-    }
-
-    @Override
-    public void deleteAddress(Long userId, Long addressId) throws AddressException {
-        Optional<User> userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new AddressException("User not found with id: " + userId);
-        }
-        User user = userOpt.get();
-        Optional<Address> addressOpt = addressRepository.findById(addressId);
-        if (addressOpt.isEmpty()) {
             throw new AddressException("Address not found with id: " + addressId);
         }
-        Address address = addressOpt.get();
-        if (!address.getUser().getUserId().equals(userId)) {
-            throw new AddressException("Address does not belong to the user");
+        Address existingAddress = existingAddressOpt.get();
+
+        return addressMapper.partialUpdate(addressDTO, existingAddress);
+
+    }
+
+    @Override
+    public void deleteAddress(Long addressId) throws AddressException {
+       if (!addressRepository.existsById(addressId)) {
+            throw new AddressException("Address not found with id: " + addressId);
         }
-        addressRepository.delete(address);
+        addressRepository.deleteById(addressId);
     }
 }

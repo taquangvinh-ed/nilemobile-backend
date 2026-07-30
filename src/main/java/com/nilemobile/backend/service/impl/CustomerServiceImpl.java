@@ -1,5 +1,6 @@
 package com.nilemobile.backend.service.impl;
 
+import com.nilemobile.backend.dto.reponse.UserDTO;
 import com.nilemobile.backend.mapper.CustomerMapper;
 import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.model.User;
@@ -24,6 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     public RegisterNewCustomerResponseDTO registerCustomer(CreateNewUserRequest request){
         User newUser = userService.registerUser(request);
         Customer newCustomer = new Customer();
+        newCustomer.setCustomerId(newUser.getUserId());
         newCustomer.setFirstName(request.getFirstName());
         newCustomer.setLastName(request.getLastName());
         newCustomer.setUser(newUser);
@@ -31,4 +33,5 @@ public class CustomerServiceImpl implements CustomerService {
         cartService.createCart(savedCustomer);
         return customerMapper.toRegisterNewCustomerResponseDTO(newUser, savedCustomer);
     }
+
 }

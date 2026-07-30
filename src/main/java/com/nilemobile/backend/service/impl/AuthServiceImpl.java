@@ -1,7 +1,5 @@
 package com.nilemobile.backend.service.impl;
 
-import com.nilemobile.backend.config.CustomUserDetails;
-import com.nilemobile.backend.config.CustomUserDetailsService;
 import com.nilemobile.backend.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

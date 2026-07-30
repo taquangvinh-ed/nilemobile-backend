@@ -1,6 +1,7 @@
 package com.nilemobile.backend.mapper;
 
 import com.nilemobile.backend.dto.CustomerDTO;
+import com.nilemobile.backend.dto.reponse.UserDTO;
 import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.dto.RegisterNewCustomerResponseDTO;
@@ -16,4 +17,6 @@ public interface CustomerMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     User partialUpdate(CustomerDTO customerDTO, @MappingTarget User user);
+
+    UserDTO toUserDTO(Customer customer);
 }

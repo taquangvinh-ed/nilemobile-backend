@@ -10,7 +10,6 @@ public interface CategoryService {
     CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO);
     void deleteCategoryById(Long id);
 
-    List<CategoryDTO> getAllCategoriesLevel1();
+    List<CategoryDTO> getAllCategoriesLevel(int level);
 
-    List<CategoryDTO> getAllCategoriesByParentCategory(Long brandId);
 }

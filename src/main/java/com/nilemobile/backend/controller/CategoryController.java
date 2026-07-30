@@ -49,20 +49,9 @@ public class CategoryController {
                 .build();
     }
 
-    @GetMapping("/level1")
-    public ApiResponse<List<CategoryDTO>> getAllCategoriesLevel1() {
-        List<CategoryDTO> categories = categoryService.getAllCategoriesLevel1();
-        return ApiResponse.<List<CategoryDTO>>builder()
-                .success(true)
-                .code(SuccessCode.GET_SUCCESS.getCode())
-                .message(SuccessCode.GET_SUCCESS.getMessage())
-                .body(categories)
-                .build();
-}
-
-    @GetMapping("/parent/{parentId}")
-    public ApiResponse<List<CategoryDTO>> getAllCategoriesByParentCategory(@PathVariable Long parentId) {
-        List<CategoryDTO> categories = categoryService.getAllCategoriesByParentCategory(parentId);
+    @GetMapping("/level/{level}")
+    public ApiResponse<List<CategoryDTO>> getAllCategoriesByLevel(@PathVariable int level) {
+        List<CategoryDTO> categories = categoryService.getAllCategoriesLevel(level);
         return ApiResponse.<List<CategoryDTO>>builder()
                 .success(true)
                 .code(SuccessCode.GET_SUCCESS.getCode())
@@ -70,4 +59,5 @@ public class CategoryController {
                 .body(categories)
                 .build();
     }
+
 }

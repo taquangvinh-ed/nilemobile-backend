@@ -1,6 +1,7 @@
 package com.nilemobile.backend.config;
 
-import com.nilemobile.backend.filter.JwtTokenValidationFiler;
+import com.nilemobile.backend.auth.CustomAuthenticationProvider;
+import com.nilemobile.backend.filter.JwtTokenValidateFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +25,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenGeneratorFilter jwtTokenGeneratorFilter;
-    private final JwtTokenValidationFiler jwtTokenValidationFiler;
+    private final JwtTokenValidateFilter jwtTokenValidationFiler;
     private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean

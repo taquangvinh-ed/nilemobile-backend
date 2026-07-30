@@ -26,9 +26,11 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
 
+    private String username;
+
     private String email;
 
-    private String password;
+    private String pwdHash;
 
     private String phoneNumber;
 
@@ -40,7 +42,7 @@ public class User extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name="roleId", nullable=false)
-    private Role role;
+    private List<Role> role;
 
     @OneToOne
     private Customer customer;

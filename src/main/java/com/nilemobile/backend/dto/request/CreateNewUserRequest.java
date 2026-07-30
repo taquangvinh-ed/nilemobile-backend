@@ -1,5 +1,6 @@
 package com.nilemobile.backend.dto.request;
 
+import com.nilemobile.backend.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -32,6 +33,5 @@ public class CreateNewUserRequest {
     @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
     private String password;
 
-
-
+    private String roleName;
 }

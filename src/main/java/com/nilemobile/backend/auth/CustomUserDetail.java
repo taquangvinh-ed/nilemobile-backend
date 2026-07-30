@@ -1,38 +1,40 @@
-package com.nilemobile.backend.config;
+package com.nilemobile.backend.auth;
+
 
 import com.nilemobile.backend.model.User;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
-import java.util.List;
 
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetail implements UserDetails {
 
     private final User user;
 
-    public Long getUserId() {
-        return user.getUserId();
-    }
-
-    public String getPhoneNumber() {
-        return user.getPhoneNumber();
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName()));
+        return user.getRole().stream().map(role ->new SimpleGrantedAuthority("ROLE_"+role.getRoleName())).toList();
     }
 
     @Override
-    public String getPassword() {
-        return user.getPassword();
+    public @Nullable String getPassword() {
+        return user.getPwdHash();
     }
 
     @Override
     public String getUsername() {
+        return user.getUsername();
+    }
+
+    public String getEmail(){
         return user.getEmail();
+    }
+
+    public Long getUserId(){
+        return user.getUserId();
     }
 }

@@ -25,8 +25,8 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public CategoryDTO createCategory(CreateCategoryRequest request) {
-        Optional<Category> brandOpt = categoryRepository.findBrandByNameAndLevel(request.getCategoryName());
-        if(brandOpt.isPresent()){
+        Optional<Category> existingCategory = categoryRepository.findByNameAndLevel(request.getCategoryName(), request.getCategoryLevel());
+        if(existingCategory.isPresent()){
             throw new CategoryAlreadyExistedException(ErrorCode.CATEGORY_ALREADY_EXISTED.getMessage());
         }
 
@@ -63,20 +63,10 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public List<CategoryDTO> getAllCategoriesLevel1() {
-        return categoryRepository.findByLevel(1).stream()
-                .map(categoriesMapper::toDto)
-                .collect(Collectors.toList());
+    public List<CategoryDTO> getAllCategoriesLevel(int level) {
+        List<Category> categories = categoryRepository.findByLevel(level);
+        return categoriesMapper.toDtoList(categories);
     }
 
 
-    @Override
-    public List<CategoryDTO> getAllCategoriesByParentCategory(Long categoryId){
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(ErrorCode.CATEGORY_NOT_FOUND.getMessage()));
-
-        return categoryRepository.findByParentCategory(category).stream()
-                .map(categoriesMapper::toDto)
-                .collect(Collectors.toList());
-    }
 }
