@@ -3,6 +3,7 @@ package com.nilemobile.backend.auth;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

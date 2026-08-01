@@ -1,58 +1,78 @@
 package com.nilemobile.backend.service.impl;
 
+import com.nilemobile.backend.contant.OrderStatus;
+import com.nilemobile.backend.dto.ReviewDTO;
+import com.nilemobile.backend.dto.request.CreateReviewRequest;
 import com.nilemobile.backend.exception.ProductException;
-import com.nilemobile.backend.model.Review;
-import com.nilemobile.backend.model.User;
-import com.nilemobile.backend.model.Variation;
+import com.nilemobile.backend.mapper.ReviewMapper;
+import com.nilemobile.backend.model.*;
+import com.nilemobile.backend.repository.OrderRepository;
+import com.nilemobile.backend.repository.ProductRepository;
 import com.nilemobile.backend.repository.ReviewRepository;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.repository.VariationRepository;
-import com.nilemobile.backend.dto.request.CreateReviewRequest;
 import com.nilemobile.backend.service.ReviewService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImp implements ReviewService {
-    private ReviewRepository reviewRepository;
-    private UserRepository userRepository;
-    private VariationRepository variationRepository;
 
-    public ReviewServiceImp(ReviewRepository reviewRepository, UserRepository userRepository, VariationRepository variationRepository) {
-        this.reviewRepository = reviewRepository;
-        this.userRepository = userRepository;
-        this.variationRepository = variationRepository;
-    }
+    private final ReviewRepository reviewRepository;
+    private final ReviewMapper reviewMapper;
+    private final UserRepository userRepository;
+    private final VariationRepository variationRepository;
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     @Override
-    public Review createReview(CreateReviewRequest request) {
-        if (request == null || request.getVariationId() == null || request.getUserId() == null) {
-            throw new ProductException("Invalid request data");
+    @Transactional
+    public ReviewDTO createReview(CreateReviewRequest request) {
+        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 5) {
+            throw new ProductException("Rating must be between 1 and 5");
+        }
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ProductException("User not found with id: " + request.getUserId()));
+        Customer customer = user.getCustomer();
+        if (customer == null) {
+            throw new ProductException("Customer not found for user with id: " + request.getUserId());
         }
 
         Variation variation = variationRepository.findById(request.getVariationId())
                 .orElseThrow(() -> new ProductException("Variation not found with id: " + request.getVariationId()));
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ProductException("User not found with id: " + request.getUserId()));
+        boolean purchased = orderRepository.existsPurchasedVariation(
+                request.getUserId(),
+                request.getVariationId(),
+                List.of(OrderStatus.DELIVERED, OrderStatus.COMPLETED));
+        if (!purchased) {
+            throw new ProductException("You can only review a product you have purchased");
+        }
 
         Review review = new Review();
+        review.setCustomer(customer);
         review.setVariation(variation);
-        review.setUser(user);
-        review.setRating(request.getRating());
         review.setContent(request.getContent());
-        review.setCreatedAt(LocalDateTime.now());
-        return reviewRepository.save(review);
+        review.setRating(request.getRating());
+
+        Review savedReview = reviewRepository.save(review);
+        return reviewMapper.toDto(savedReview);
     }
 
     @Override
+    @Transactional
     public void deleteReview(Long userId, Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ProductException("Review not found with id: " + reviewId));
 
-        if (!review.getUser().getUserId().equals(userId)) {
+        Customer customer = review.getCustomer();
+        if (customer == null || customer.getUser() == null || !customer.getUser().getUserId().equals(userId)) {
             throw new ProductException("Unauthorized to delete this review");
         }
 
@@ -60,10 +80,11 @@ public class ReviewServiceImp implements ReviewService {
     }
 
     @Override
-    public List<Review> getAllReview(Variation variation) throws ProductException {
-        if (variation == null || variation.getId() == null) {
-            throw new ProductException("Invalid variation");
-        }
-        return reviewRepository.findByVariation(variation);
+    @Transactional(readOnly = true)
+    public List<ReviewDTO> getAllReview(Long productId) throws ProductException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductException("Product not found with id: " + productId));
+        List<Review> reviews = reviewRepository.findByProduct(product);
+        return reviewMapper.toDtoList(reviews);
     }
 }

@@ -24,11 +24,11 @@ public class BaseEntity {
     private LocalDateTime createdAt;
     
     @CreatedBy
-    private User createdBy;
+    private Long createdBy;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @LastModifiedBy
-    private User updatedBy;
+    private Long updatedBy;
 }

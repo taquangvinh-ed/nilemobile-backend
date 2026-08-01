@@ -3,6 +3,7 @@ package com.nilemobile.backend.controller;
 import com.nilemobile.backend.dto.reponse.ApiResponse;
 import com.nilemobile.backend.dto.request.CreateNewUserRequest;
 import com.nilemobile.backend.dto.request.LoginRequest;
+import com.nilemobile.backend.service.AuthenticationService;
 import com.nilemobile.backend.service.CustomerService;
 import com.nilemobile.backend.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,23 +24,23 @@ public class AuthController {
 
     private final CustomerService customerService;
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/customer/signup")
     public ApiResponse<?> registerNewCustomer(HttpServletRequest httpServletRequest,  @RequestBody CreateNewUserRequest request) {
-        customerService.registerCustomer(request);
-        String jwt = userService.login(httpServletRequest, request.getPhoneNumber(), request.getPassword());
+        authenticationService.register(request);
         return ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())
                 .message("User registered successfully")
                 .timestamp(Timestamp.from(Instant.now()))
-                .body(jwt)
+                .body(null)
                 .build();
     }
 
     @PostMapping("/login")
     public ApiResponse<?> login(HttpServletRequest httpServletRequest, @RequestBody LoginRequest loginRequest) {
-        String jwt = userService.login(httpServletRequest, loginRequest.getIdentifier(), loginRequest.getPassword());
+        String jwt = authenticationService.login(loginRequest.getIdentifier(), loginRequest.getPassword());
         return ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())

@@ -6,15 +6,11 @@ import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.dto.reponse.UserDTO;
 import com.nilemobile.backend.repository.UserRepository;
 import com.nilemobile.backend.dto.request.CreateNewUserRequest;
-import com.nilemobile.backend.service.AuthService;
-import com.nilemobile.backend.service.JwtTokenService;
 import com.nilemobile.backend.exception.UserException;
+import com.nilemobile.backend.service.JwtTokenService;
 import com.nilemobile.backend.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +25,7 @@ public class UserServiceImp implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenService jwtTokenService;
 
     @Override
     @Transactional
@@ -50,12 +47,21 @@ public class UserServiceImp implements UserService {
 
 
     @Override
-    public UserDTO findUserById(Long userId) throws UserException {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            return userMapper.toDTO(user.get());
+    public User findUserProfileByJwt(String jwt) throws UserException {
+        String token = jwt != null && jwt.startsWith("Bearer ") ? jwt.substring(7) : jwt;
+        Claims claims = jwtTokenService.extractClaims(token);
+        Number userId = claims.get("userId", Number.class);
+        if (userId == null) {
+            throw new UserNotExistedException(ErrorCode.USER_NOT_FOUND.getMessage());
         }
-        throw new UserNotExistedException(ErrorCode.USER_NOT_FOUND.getMessage());
+        return userRepository.findById(userId.longValue())
+                .orElseThrow(() -> new UserNotExistedException(ErrorCode.USER_NOT_FOUND.getMessage()));
+    }
+
+    @Override
+    public User findUserById(Long userId) throws UserException {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotExistedException(ErrorCode.USER_NOT_FOUND.getMessage()));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.nilemobile.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +18,9 @@ public class CartItem extends BaseEntity {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "subtotal", nullable = false)
+    private long subtotal = 0L;
+
     @ManyToOne
     @JoinColumn(name = "cartId", nullable = false)
     private Cart cart;
@@ -27,6 +29,6 @@ public class CartItem extends BaseEntity {
     @JoinColumn(name = "variationId", nullable = false)
     private Variation variation;
 
-    private Boolean isSelected;
+    private boolean isSelected;
 
 }

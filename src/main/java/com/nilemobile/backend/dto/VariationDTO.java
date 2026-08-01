@@ -1,6 +1,5 @@
 package com.nilemobile.backend.dto;
 
-import com.nilemobile.backend.contant.DiscountType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,12 +19,6 @@ public class VariationDTO {
 
     private Long productId;
 
-    private DiscountType discountType;
-
-    private Long discountPrice;
-
-    private Long discountPercentage;
-
-    private Long finalPrice;
+    private Long price;
 
 }

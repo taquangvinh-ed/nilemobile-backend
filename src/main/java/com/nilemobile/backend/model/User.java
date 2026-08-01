@@ -41,8 +41,8 @@ public class User extends BaseEntity {
     private boolean isEnabled;
 
     @ManyToOne
-    @JoinColumn(name="roleId", nullable=false)
-    private List<Role> role;
+    @JoinColumn(name="roleId")
+    private Role role;
 
     @OneToOne
     private Customer customer;

@@ -1,6 +1,5 @@
 package com.nilemobile.backend.model;
 
-import com.nilemobile.backend.contant.DiscountType;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,14 +39,10 @@ public class Variation extends BaseEntity{
     @OneToMany(mappedBy = "variation", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-    @Enumerated(EnumType.STRING)
-    private DiscountType discountType;
+    @OneToOne(mappedBy = "variation", cascade = CascadeType.ALL)
+    private OrderDetail orderDetail;
 
-    private Long discountPrice;
-
-    private Long discountPercentage;
-
-    private Long finalPrice;
+    private Long price;
 
     private boolean isDeleted = false;
 }

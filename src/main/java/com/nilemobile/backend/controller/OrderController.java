@@ -1,220 +1,163 @@
 package com.nilemobile.backend.controller;
 
+import com.nilemobile.backend.contant.SuccessCode;
+import com.nilemobile.backend.dto.OrderDTO;
+import com.nilemobile.backend.dto.reponse.ApiResponse;
 import com.nilemobile.backend.exception.Orderexception;
+import com.nilemobile.backend.mapper.OrderMapper;
 import com.nilemobile.backend.model.Address;
+import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.model.Order;
 import com.nilemobile.backend.model.User;
-import com.nilemobile.backend.dto.OrderDTO;
 import com.nilemobile.backend.service.OrderService;
-import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
+
     private final OrderService orderService;
+
     private final UserService userService;
 
-    @Autowired
-    public OrderController(OrderService orderService, UserService userService) {
-        this.orderService = orderService;
-        this.userService = userService;
-    }
+    private final OrderMapper orderMapper;
 
-    @PostMapping("/user/create")
-    public ResponseEntity<OrderDTO> createOrder(
-            @RequestParam Long userId,
-            @RequestBody Map<String, Object> request) { // Nhận request body dưới dạng Map để xử lý cả shippingAddress và selectedItems
-        try {
-            User user = userService.findUserById(userId);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-
-            // Lấy shippingAddress từ request
-            Address shippingAddress = null;
-            if (request != null && request.containsKey("shippingAddress") && request.get("shippingAddress") != null) {
-                Map<String, Object> addressMap = (Map<String, Object>) request.get("shippingAddress");
-                if (addressMap != null) { // Kiểm tra addressMap không null
-                    shippingAddress = new Address();
-                    shippingAddress.setAddressId(addressMap.get("addressId") != null
-                            ? Long.parseLong(addressMap.get("addressId").toString())
-                            : null);
-                    shippingAddress.setFirstName((String) addressMap.get("firstName"));
-                    shippingAddress.setLastName((String) addressMap.get("lastName"));
-                    shippingAddress.setAddressLine((String) addressMap.get("addressLine"));
-                    shippingAddress.setWard((String) addressMap.get("ward"));
-                    shippingAddress.setDistrict((String) addressMap.get("district"));
-                    shippingAddress.setProvince((String) addressMap.get("province"));
-                    shippingAddress.setPhoneNumber((String) addressMap.get("phoneNumber"));
-                }
-            }
-
-            // Lấy selectedItems từ request
-            List<Map<String, Object>> selectedItems = null;
-            if (request != null && request.containsKey("selectedItems")) {
-                selectedItems = (List<Map<String, Object>>) request.get("selectedItems");
-            } else {
-                throw new Orderexception("Danh sách sản phẩm được chọn không được để trống!");
-            }
-
-            // Gọi OrderService với cả shippingAddress và selectedItems
-            Order order = orderService.createOrder(user, shippingAddress, selectedItems);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        } catch (Exception e) {
-            // Log lỗi để debug
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+    @PostMapping
+    public ApiResponse<OrderDTO> createOrder(@RequestHeader("Authorization") String jwt, @RequestParam Long addressId) {
+        User user = userService.findUserProfileByJwt(jwt);
+        Customer customer = user.getCustomer();
+        if (customer == null) {
+            throw new Orderexception("Customer not found for user with id: " + user.getUserId());
         }
-    }
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long orderId) {
-        try {
-            Order order = orderService.findOrderById(orderId);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
+        OrderDTO orderDTO = orderService.createOrder(customer.getCustomerId(), addressId);
 
-//    @GetMapping("/user/{userId}/orders/history")
-//    public ResponseEntity<List<OrderDTO>> getOrderHistory(@PathVariable Long userId) {
-//        List<Order> orders = orderService.orderHistory(userId);
-//        List<OrderDTO> orderDTOs = OrderMapper.toDTOs(orders);
-//        return ResponseEntity.ok(orderDTOs);
-//    }
-
-//    @GetMapping("/user/{userId}/orders/all")
-//    public ResponseEntity<List<OrderDTO>> getAllOrders(@PathVariable Long userId) {
-//        List<Order> orders = orderService.getAllOrders(userId);
-//        List<OrderDTO> orderDTOs = OrderMapper.toDTOs(orders);
-//        return ResponseEntity.ok(orderDTOs);
-//    }
-
-    @PutMapping("/{orderId}/confirm")
-    public ResponseEntity<OrderDTO> confirmOrder(@PathVariable Long orderId) {
-        try {
-            Order order = orderService.confirmOrder(orderId);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @PutMapping("/{orderId}/process")
-    public ResponseEntity<OrderDTO> processOrder(@PathVariable Long orderId) {
-        try {
-            Order order = orderService.processOrder(orderId);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @PutMapping("/{orderId}/ship")
-    public ResponseEntity<OrderDTO> shipOrder(@PathVariable Long orderId) {
-        try {
-            Order order = orderService.shippedOrder(orderId);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @PutMapping("/{orderId}/deliver")
-    public ResponseEntity<OrderDTO> deliverOrder(@PathVariable Long orderId) {
-        try {
-            Order order = orderService.deliveredOrder(orderId);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @PutMapping("/{orderId}/complete")
-    public ResponseEntity<OrderDTO> completeOrder(@PathVariable Long orderId) {
-        try {
-            Order order = orderService.completeOrder(orderId);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @PutMapping("/{orderId}/cancel")
-    public ResponseEntity<OrderDTO> cancelOrder(@PathVariable Long orderId) {
-        try {
-            Order order = orderService.canceledOrder(orderId);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Long orderId) {
-        try {
-            orderService.deleteOrder(orderId);
-            return ResponseEntity.ok("Xóa đơn hàng thành công!");
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<List<OrderDTO>> filterOrdersByStatus(@RequestParam String status) {
-        try {
-            List<OrderDTO> orderDTOs = orderService.filterOrderByStatus(status);
-            return ResponseEntity.ok(orderDTOs);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @PutMapping("/{orderId}/update-shipping-address")
-    public ResponseEntity<OrderDTO> updateShippingAddress(@PathVariable Long orderId, @RequestBody Address shippingAddress) {
-        try {
-            Order order = orderService.updateShippingAddress(orderId, shippingAddress);
-            OrderDTO orderDTO = OrderMapper.toDTO(order);
-            return ResponseEntity.ok(orderDTO);
-        } catch (Orderexception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        return ApiResponse.<OrderDTO>builder()
+                .success(true)
+                .code(SuccessCode.CREATE_SUCCESS.getCode())
+                .message(SuccessCode.CREATE_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(orderDTO)
+                .build();
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getUserOrders(
+    public ApiResponse<List<OrderDTO>> getUserOrders(
             @RequestHeader("Authorization") String jwt,
-            @RequestParam(value = "status", required = false) String status) throws UserException {
+            @RequestParam(value = "status", required = false) String status) {
         User user = userService.findUserProfileByJwt(jwt);
-        List<Order> orders;
 
-        if (status != null && !status.isEmpty() && !status.equalsIgnoreCase("all")) {
-            orders = orderService.getOrdersByUserAndStatus(user.getUserId(), status);
+        List<OrderDTO> orderDTOs;
+        if (status == null || status.isBlank() || status.equalsIgnoreCase("all")) {
+            orderDTOs = orderService.getAllOrders(user.getUserId());
         } else {
-            orders = orderService.getAllOrders(user.getUserId());
+            orderDTOs = orderService.getOrdersByUserAndStatus(user.getUserId(), status);
         }
 
-        List<OrderDTO> orderDTOs = OrderMapper.toDTOs(orders);
-        return new ResponseEntity<>(orderDTOs, HttpStatus.OK);
+        return ApiResponse.<List<OrderDTO>>builder()
+                .success(true)
+                .code(SuccessCode.GET_SUCCESS.getCode())
+                .message(SuccessCode.GET_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(orderDTOs)
+                .build();
+    }
+
+    @GetMapping("/filter")
+    public ApiResponse<List<OrderDTO>> filterOrdersByStatus(@RequestParam String status) {
+        List<OrderDTO> orderDTOs = orderService.filterOrderByStatus(status);
+
+        return ApiResponse.<List<OrderDTO>>builder()
+                .success(true)
+                .code(SuccessCode.GET_SUCCESS.getCode())
+                .message(SuccessCode.GET_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(orderDTOs)
+                .build();
+    }
+
+    @GetMapping("/{orderId}")
+    public ApiResponse<OrderDTO> getOrderById(@PathVariable Long orderId) {
+        OrderDTO order = orderService.findOrderById(orderId);
+
+        return ApiResponse.<OrderDTO>builder()
+                .success(true)
+                .code(SuccessCode.GET_SUCCESS.getCode())
+                .message(SuccessCode.GET_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(order)
+                .build();
+    }
+
+    @PutMapping("/{orderId}/confirm")
+    public ApiResponse<OrderDTO> confirmOrder(@PathVariable Long orderId) {
+        return statusResponse(orderService.confirmOrder(orderId));
+    }
+
+    @PutMapping("/{orderId}/process")
+    public ApiResponse<OrderDTO> processOrder(@PathVariable Long orderId) {
+        return statusResponse(orderService.processOrder(orderId));
+    }
+
+    @PutMapping("/{orderId}/ship")
+    public ApiResponse<OrderDTO> shipOrder(@PathVariable Long orderId) {
+        return statusResponse(orderService.shippedOrder(orderId));
+    }
+
+    @PutMapping("/{orderId}/deliver")
+    public ApiResponse<OrderDTO> deliverOrder(@PathVariable Long orderId) {
+        return statusResponse(orderService.deliveredOrder(orderId));
+    }
+
+    @PutMapping("/{orderId}/complete")
+    public ApiResponse<OrderDTO> completeOrder(@PathVariable Long orderId) {
+        return statusResponse(orderService.completeOrder(orderId));
+    }
+
+    @PutMapping("/{orderId}/cancel")
+    public ApiResponse<OrderDTO> cancelOrder(@PathVariable Long orderId) {
+        return statusResponse(orderService.canceledOrder(orderId));
+    }
+
+    @PutMapping("/{orderId}/update-shipping-address")
+    public ApiResponse<OrderDTO> updateShippingAddress(@PathVariable Long orderId, @RequestBody Address shippingAddress) {
+        OrderDTO orderDTO = orderService.updateShippingAddress(orderId, shippingAddress);
+
+        return ApiResponse.<OrderDTO>builder()
+                .success(true)
+                .code(SuccessCode.UPDATE_SUCCESS.getCode())
+                .message(SuccessCode.UPDATE_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(orderDTO)
+                .build();
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ApiResponse<Void> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .code(SuccessCode.DELETE_SUCCESS.getCode())
+                .message(SuccessCode.DELETE_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
+    }
+
+    private ApiResponse<OrderDTO> statusResponse(OrderDTO orderDTO) {
+        return ApiResponse.<OrderDTO>builder()
+                .success(true)
+                .code(SuccessCode.UPDATE_SUCCESS.getCode())
+                .message(SuccessCode.UPDATE_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(orderDTO)
+                .build();
     }
 }

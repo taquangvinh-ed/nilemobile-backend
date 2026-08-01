@@ -27,7 +27,7 @@ public interface AddressMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "addressId", ignore = true)
-    AddressDTO partialUpdate(AddressDTO addressDTO, @MappingTarget Address address);
+    Address partialUpdate(AddressDTO addressDTO, @MappingTarget Address address);
 
     List<AddressDTO> toDtoList(List<Address> addresses);
 }

@@ -15,7 +15,8 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
-   Optional<Product> findProductWithVariationsAndCategoryById(Long productId);
+   @Query("SELECT p FROM Product p JOIN FETCH p.category LEFT JOIN FETCH p.variations WHERE p.productId = :productId")
+   Optional<Product> findProductWithVariationsAndCategoryById(@Param("productId") Long productId);
 
    Page<Product> findByCategory_NameAndIsDeleted(String categoryName, boolean deleted, Pageable pageable);
 

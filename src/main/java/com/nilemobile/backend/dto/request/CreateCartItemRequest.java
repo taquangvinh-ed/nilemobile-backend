@@ -1,5 +1,6 @@
 package com.nilemobile.backend.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,9 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CreateReviewRequest {
-    private Long userId;
+@AllArgsConstructor
+public class CreateCartItemRequest {
     private Long variationId;
-    private String content;
-    private Float rating;
+    private Long cartId;
+    private Integer quantity;
 }

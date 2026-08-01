@@ -15,7 +15,7 @@ import java.util.Map;
 public class CreateProductRequest {
     private String productName;
     private String description;
-    private Map<String, Object> attributes;
+    private Map<String, String> attributes;
     private String firstLevel;
     private String secondLevel;
     private String thirdLevel;

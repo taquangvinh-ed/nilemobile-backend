@@ -8,6 +8,7 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ProductMapper {
+
     @Mapping(target = "variations", ignore = true)
     @Mapping(target = "category", ignore = true)
     Product toEntity(CreateProductRequest request);

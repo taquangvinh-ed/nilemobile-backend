@@ -53,7 +53,8 @@ public class AddressServiceImp implements AddressService {
         }
         Address existingAddress = existingAddressOpt.get();
 
-        return addressMapper.partialUpdate(addressDTO, existingAddress);
+        Address updatedAddress = addressMapper.partialUpdate(addressDTO, existingAddress);
+        return addressMapper.toDto(updatedAddress);
 
     }
 

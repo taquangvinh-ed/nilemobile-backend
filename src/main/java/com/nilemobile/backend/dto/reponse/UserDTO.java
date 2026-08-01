@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class UserDTO {
 
     private String phoneNumber;
 
-    private String role;
+    private List<String> roleName;
 
     private String createdDateAt;
 }

@@ -1,86 +1,91 @@
 package com.nilemobile.backend.controller;
 
+import com.nilemobile.backend.contant.SuccessCode;
+import com.nilemobile.backend.dto.ReviewDTO;
+import com.nilemobile.backend.dto.reponse.ApiResponse;
+import com.nilemobile.backend.dto.request.CreateReviewRequest;
 import com.nilemobile.backend.exception.ProductException;
-import com.nilemobile.backend.model.Review;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.model.Variation;
-import com.nilemobile.backend.dto.ReviewDTO;
 import com.nilemobile.backend.repository.VariationRepository;
-import com.nilemobile.backend.dto.request.CreateReviewRequest;
 import com.nilemobile.backend.service.ReviewService;
 import com.nilemobile.backend.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reviews")
+@RequiredArgsConstructor
 public class ReviewController {
-    private ReviewService reviewService;
-    private UserService userService;
-    private VariationRepository variationRepository;
 
-    public ReviewController(ReviewService reviewService,
-                            UserService userService,
-                            VariationRepository variationRepository) {
-        this.reviewService = reviewService;
-        this.userService = userService;
-        this.variationRepository = variationRepository;
-    }
+    private final ReviewService reviewService;
+
+    private final UserService userService;
+
+    private final VariationRepository variationRepository;
 
     @PostMapping
-    public ResponseEntity<ReviewDTO> createReview(@RequestBody CreateReviewRequest req,
-                                                  @RequestHeader("Authorization") String jwt) {
-
-        System.out.println("Received request: " + req + ", JWT: " + jwt);
+    public ApiResponse<ReviewDTO> createReview(@RequestBody CreateReviewRequest request,
+                                               @RequestHeader("Authorization") String jwt) {
         User user = userService.findUserProfileByJwt(jwt);
-        Long userId = user.getUserId();
-        req.setUserId(userId);
-        try {
-            Review createdReview = reviewService.createReview(req);
-            ReviewDTO reviewDTO = new ReviewDTO(createdReview);
-            return new ResponseEntity<>(reviewDTO, HttpStatus.CREATED);
-        } catch (ProductException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+        request.setUserId(user.getUserId());
 
+        ReviewDTO reviewDTO = reviewService.createReview(request);
+
+        return ApiResponse.<ReviewDTO>builder()
+                .success(true)
+                .code(SuccessCode.CREATE_SUCCESS.getCode())
+                .message(SuccessCode.CREATE_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(reviewDTO)
+                .build();
     }
 
-
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteeReview(@PathVariable Long reviewId,
-                                              @RequestHeader("Authorization") String jwt) {
-
+    public ApiResponse<Void> deleteReview(@PathVariable Long reviewId,
+                                          @RequestHeader("Authorization") String jwt) {
         User user = userService.findUserProfileByJwt(jwt);
 
-        Long userId = user.getUserId();
-        ;
+        reviewService.deleteReview(user.getUserId(), reviewId);
 
-        try {
-            reviewService.deleteReview(userId, reviewId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (ProductException e) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .code(SuccessCode.DELETE_SUCCESS.getCode())
+                .message(SuccessCode.DELETE_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .build();
     }
 
     @GetMapping("/variation/{variationId}")
-    public ResponseEntity<?> getReviewsByVariation(@PathVariable Long variationId) {
-        try {
-            Optional<Variation> variation = variationRepository.findById(variationId);
-            List<Review> reviews = reviewService.getAllReview(variation.get());
-            List<ReviewDTO> reviewDTOs = reviews.stream()
-                    .map(ReviewDTO::new)
-                    .collect(Collectors.toList());
-            return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
-        } catch (ProductException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ApiResponse<List<ReviewDTO>> getReviewsByVariation(@PathVariable Long variationId) {
+        Variation variation = variationRepository.findById(variationId)
+                .orElseThrow(() -> new ProductException("Variation not found with id: " + variationId));
+
+        List<ReviewDTO> reviewDTOs = reviewService.getAllReview(variation.getProduct().getProductId());
+
+        return ApiResponse.<List<ReviewDTO>>builder()
+                .success(true)
+                .code(SuccessCode.GET_SUCCESS.getCode())
+                .message(SuccessCode.GET_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(reviewDTOs)
+                .build();
+    }
+
+    @GetMapping("/product/{productId}")
+    public ApiResponse<List<ReviewDTO>> getReviewsByProduct(@PathVariable Long productId) {
+        List<ReviewDTO> reviewDTOs = reviewService.getAllReview(productId);
+
+        return ApiResponse.<List<ReviewDTO>>builder()
+                .success(true)
+                .code(SuccessCode.GET_SUCCESS.getCode())
+                .message(SuccessCode.GET_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(reviewDTOs)
+                .build();
     }
 }
-

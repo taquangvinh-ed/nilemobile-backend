@@ -1,5 +1,6 @@
 package com.nilemobile.backend.service.impl;
 
+import com.nilemobile.backend.auth.CustomUserDetail;
 import com.nilemobile.backend.exception.ErrorCode;
 import com.nilemobile.backend.exception.InvalidTokenException;
 import com.nilemobile.backend.service.JwtTokenService;
@@ -21,13 +22,13 @@ public class JwtTokeServiceImpl implements JwtTokenService {
 
     private String jwtSecretKey;
 
-    public JwtTokeServiceImpl(@Value("${jwt.sercet-key}") String jwtSecretKey) {
+    public JwtTokeServiceImpl(@Value("${jwt.secret-key}") String jwtSecretKey) {
         this.jwtSecretKey = jwtSecretKey;
     }
 
     @Override
     public String generateToken(Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
         SecretKey secretKey = getJwtSecretKey();
         String jwtToken = Jwts.builder()
                 .issuer("nilemobile")

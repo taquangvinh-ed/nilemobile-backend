@@ -1,5 +1,6 @@
 package com.nilemobile.backend.config;
 
+import com.nilemobile.backend.auth.CustomUserDetail;
 import com.nilemobile.backend.model.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,27 +16,28 @@ import java.util.Optional;
 public class AuditConfig {
 
     /**
-     * Bean để Spring Data JPA tự động lấy current user khi save entity
+     * Bean để Spring Data JPA tự động lấy current user id khi save entity
      * Nếu không có authentication, sẽ return empty (có thể set null hoặc default)
      */
     @Bean
-    public AuditorAware<User> auditorAware() {
+    public AuditorAware<Long> auditorAware() {
         return () -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            
+
             if (authentication != null && authentication.isAuthenticated()) {
                 Object principal = authentication.getPrincipal();
-                
-                // Nếu principal là User entity, return nó
-                if (principal instanceof User) {
-                    return Optional.of((User) principal);
+
+                // Principal được set bởi JwtTokenValidateFilter là CustomUserDetail
+                if (principal instanceof CustomUserDetail customUserDetail) {
+                    return Optional.ofNullable(customUserDetail.getUserId());
                 }
-                // Nếu principal là String (username), có thể load user từ DB
-                // (implementation tùy cách bạn store authentication)
+                // Fallback nếu principal là User entity
+                if (principal instanceof User user) {
+                    return Optional.ofNullable(user.getUserId());
+                }
             }
-            
+
             return Optional.empty();
         };
     }
 }
-

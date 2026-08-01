@@ -1,49 +1,44 @@
 package com.nilemobile.backend.controller;
 
-import com.nilemobile.backend.model.Cart;
-import com.nilemobile.backend.model.User;
+import com.nilemobile.backend.contant.SuccessCode;
 import com.nilemobile.backend.dto.CartDTO;
-import com.nilemobile.backend.dto.CartItemDTO;
-import com.nilemobile.backend.dto.VariationDTO;
+import com.nilemobile.backend.dto.reponse.ApiResponse;
+import com.nilemobile.backend.exception.CartException;
+import com.nilemobile.backend.exception.ErrorCode;
+import com.nilemobile.backend.model.Customer;
+import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.service.CartService;
-import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @RestController
-@RequestMapping("api/user/cart")
+@RequestMapping("/api/user/cart")
+@RequiredArgsConstructor
 public class CartController {
 
-    private CartService cartService;
-    private UserService userService;
+    private final CartService cartService;
 
-    public CartController(CartService cartService, UserService userService) {
-        this.cartService = cartService;
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<CartDTO> getCart(@RequestHeader("Authorization") String jwt) throws UserException {
+    public ApiResponse<CartDTO> getCart(@RequestHeader("Authorization") String jwt) {
         User user = userService.findUserProfileByJwt(jwt);
-        Cart cart = cartService.findUserCart(user.getUserId());
+        Customer customer = user.getCustomer();
+        if (customer == null) {
+            throw new CartException(ErrorCode.CART_NOT_FOUND, "Cart not found for user with id: " + user.getUserId());
+        }
 
-        List<CartItemDTO> cartItemDTOs = cart.getCartItems().stream().map(cartItem -> {
-            VariationDTO variationDTO = new VariationDTO(cartItem.getVariation());
-            return new CartItemDTO(variationDTO.getName(), cartItem.getId(), variationDTO, cartItem.getQuantity(), cartItem.getSubtotal(), cartItem.getDiscountPrice(), cartItem.getSelected());
-        }).collect(Collectors.toList());
-
-        CartDTO cartDTO = new CartDTO(cart.getSubtotal(),
-                cart.getTotalDiscountPrice(),
-                cart.getTotalDiscountPercent(),
-                cart.getTotalItems(),
-                cartItemDTOs);
-        return new ResponseEntity<>(cartDTO, HttpStatus.OK);
+        CartDTO cartDTO = cartService.getCartByCustomerId(customer.getCustomerId());
+        return ApiResponse.<CartDTO>builder()
+                .success(true)
+                .code(SuccessCode.GET_SUCCESS.getCode())
+                .message(SuccessCode.GET_SUCCESS.getMessage())
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(cartDTO)
+                .build();
     }
-
-   
 }

@@ -11,7 +11,9 @@ public interface UserService {
 
     User registerUser(CreateNewUserRequest request) throws UserException;
 
-    UserDTO findUserById(Long userId) throws UserException;
+    User findUserProfileByJwt(String jwt) throws UserException;
+
+    User findUserById(Long userId) throws UserException;
 
     List<UserDTO> getAllUsers();
 

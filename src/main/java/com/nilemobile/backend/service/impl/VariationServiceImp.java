@@ -8,7 +8,6 @@ import com.nilemobile.backend.model.Product;
 import com.nilemobile.backend.model.Variation;
 import com.nilemobile.backend.repository.ProductRepository;
 import com.nilemobile.backend.repository.VariationRepository;
-import com.nilemobile.backend.request.CreateVariationRequest;
 import com.nilemobile.backend.service.ProductService;
 import com.nilemobile.backend.service.VariationService;
 import lombok.RequiredArgsConstructor;

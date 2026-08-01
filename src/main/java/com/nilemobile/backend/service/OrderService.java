@@ -11,32 +11,31 @@ import java.util.Map;
 
 public interface OrderService {
 
-    public Order createOrder(User user, Address shippingAddress, List<Map<String, Object>> selectedItems);
+    public OrderDTO createOrder(Long userId, Long addressId) throws Orderexception;
 
-    public Order findOrderById(Long orderId) throws Orderexception;
+    public OrderDTO findOrderById(Long orderId) throws Orderexception;
 
-    public List<Order> orderHistory(Long userId);
+    public List<OrderDTO> orderHistory(Long userId);
 
+    public OrderDTO confirmOrder(Long orderId) throws Orderexception;
 
-    public Order confirmOrder(Long orderId) throws Orderexception;
+    OrderDTO processOrder(Long orderId) throws Orderexception;
 
-    Order processOrder(Long orderId) throws Orderexception;
+    public OrderDTO shippedOrder(Long orderId) throws Orderexception;
 
-    public Order shippedOrder(Long orderId) throws Orderexception;
+     OrderDTO deliveredOrder(Long orderId) throws Orderexception;
 
-    public Order deliveredOrder(Long orderId) throws Orderexception;
+    OrderDTO completeOrder(Long orderId) throws Orderexception;
 
-    Order completeOrder(Long orderId) throws Orderexception;
+    public OrderDTO canceledOrder(Long orderId) throws Orderexception;
 
-    public Order canceledOrder(Long orderId) throws Orderexception;
-
-    public List<Order> getAllOrders(Long userId);
+    public List<OrderDTO> getAllOrders(Long userId);
 
     public void deleteOrder(Long orderId) throws Orderexception;
 
     public List<OrderDTO> filterOrderByStatus(String status);
 
-    Order updateShippingAddress(Long orderId, Address shippingAddress) throws Orderexception;
+    OrderDTO updateShippingAddress(Long orderId, Address shippingAddress) throws Orderexception;
 
-    List<Order> getOrdersByUserAndStatus(Long userId, String status);
+    List<OrderDTO> getOrdersByUserAndStatus(Long userId, String status);
 }

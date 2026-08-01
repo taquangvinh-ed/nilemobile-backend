@@ -26,7 +26,9 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "customerId", nullable = false)
     private Customer customer;
 
-    private Long totalAmount;
+    private Integer totalItem;
+
+    private Long totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;

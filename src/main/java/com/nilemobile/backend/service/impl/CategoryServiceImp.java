@@ -40,6 +40,7 @@ public class CategoryServiceImp implements CategoryService {
         return categoriesMapper.toDto(savedCategory);
     }
 
+
     @Override
     public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
 

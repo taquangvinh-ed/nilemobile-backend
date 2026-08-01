@@ -1,154 +1,157 @@
 package com.nilemobile.backend.service.impl;
 
+import com.nilemobile.backend.dto.CartItemDTO;
 import com.nilemobile.backend.exception.CartItemException;
+import com.nilemobile.backend.dto.request.CreateCartItemRequest;
+import com.nilemobile.backend.mapper.CartItemMapper;
 import com.nilemobile.backend.model.Cart;
 import com.nilemobile.backend.model.CartItem;
+import com.nilemobile.backend.model.Customer;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.model.Variation;
 import com.nilemobile.backend.repository.CartItemRepository;
 import com.nilemobile.backend.repository.CartRepository;
+import com.nilemobile.backend.repository.VariationRepository;
 import com.nilemobile.backend.service.CartItemService;
-import com.nilemobile.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CartItemServiceImp implements CartItemService {
 
-    @Autowired
     private final CartItemRepository cartItemRepository;
 
-    @Autowired
-    private final UserService userService;
+    private final CartItemMapper cartItemMapper;
 
-    @Autowired
     private final CartRepository cartRepository;
 
-    public CartItemServiceImp(CartItemRepository cartItemRepository, UserService userService, CartRepository cartRepository) {
-        this.cartItemRepository = cartItemRepository;
-        this.userService = userService;
-        this.cartRepository = cartRepository;
-    }
+    private final VariationRepository variationRepository;
+
 
     @Override
-    public CartItem createCartItem(CartItem cartItem, Long userId) {
-        User user = userService.findUserById(userId);
-        if (user == null) {
-            throw new CartItemException("User not found for ID: " + userId);
+    @Transactional
+    public CartItemDTO createCartItem(CreateCartItemRequest request) {
+        if (request == null || request.getVariationId() == null) {
+            throw new CartItemException("Variation ID cannot be null");
+        }
+        if (request.getCartId() == null) {
+            throw new CartItemException("Cart ID cannot be null");
         }
 
-        if (cartItem == null || cartItem.getCart() == null) {
-            throw new CartItemException("CartItem or Cart cannot be null");
+        Cart cart = cartRepository.findById(request.getCartId())
+                .orElseThrow(() -> new CartItemException("Cart not found with ID: " + request.getCartId()));
+
+        Variation variation = variationRepository.findById(request.getVariationId())
+                .orElseThrow(() -> new CartItemException("Variation not found with ID: " + request.getVariationId()));
+
+        if (variation.isDeleted()) {
+            throw new CartItemException("Variation with ID " + variation.getVariationId() + " has been deleted");
         }
 
-        Cart cart = cartRepository.findByCartIdWithItems(cartItem.getCart().getCartId())
-                .orElseThrow(() -> new CartItemException("Cart not found with ID: " + cartItem.getCart().getCartId()));
+        int quantity = request.getQuantity() != null && request.getQuantity() > 0
+                ? request.getQuantity() : 1;
+        validateStock(variation, quantity);
 
-        if (cart.getUser() != null && !cart.getUser().getUserId().equals(userId)) {
-            throw new CartItemException("Cart with ID " + cart.getCartId() + " belongs to another user.");
+        CartItem existingCartItem = cart.getCartItems().stream()
+                .filter(item -> item.getVariation() != null
+                        && item.getVariation().getVariationId().equals(variation.getVariationId()))
+                .findFirst()
+                .orElse(null);
+
+        if (existingCartItem != null) {
+            int newQuantity = existingCartItem.getQuantity() + quantity;
+            validateStock(variation, newQuantity);
+            existingCartItem.setQuantity(newQuantity);
+            existingCartItem.setSubtotal(calculateSubtotal(newQuantity, variation.getPrice() != null ? variation.getPrice() : 0L));
+            CartItem updatedCartItem = cartItemRepository.save(existingCartItem);
+            return cartItemMapper.toDto(updatedCartItem);
         }
 
-        if (cart.getUser() == null) {
-            cart.setUser(user);
-        }
-
-        boolean exists = isCartItemExist(cart, cartItem.getVariation(), userId);
-        if (exists) {
-            CartItem existingCartItem = cart.getCartItems().stream()
-                    .filter(item -> item.getVariation().getId().equals(cartItem.getVariation().getId()))
-                    .findFirst()
-                    .orElse(null);
-            if (existingCartItem != null) {
-                existingCartItem.setQuantity(existingCartItem.getQuantity() + 1);
-                long price = existingCartItem.getVariation().getPrice();
-                existingCartItem.setSubtotal(existingCartItem.getQuantity() * price);
-                CartItem updatedCartItem = cartItemRepository.save(existingCartItem);
-                cart = updatedCartItem.getCart();
-                cart.calculateSubtotal();
-                cartRepository.save(cart);
-                return updatedCartItem;
-            }
-        }
-
-        cartItem.setQuantity(1);
-        cartItem.setDiscountPrice(cartItem.getQuantity() * cartItem.getVariation().getDiscountPrice());
-        if (cartItem.getVariation() != null) {
-            long price = cartItem.getVariation().getPrice();
-            cartItem.setSubtotal(cartItem.getQuantity() * price);
-        } else {
-            cartItem.setSubtotal(0L);
-        }
+        CartItem cartItem = new CartItem();
+        cartItem.setVariation(variation);
         cartItem.setCart(cart);
-        CartItem saveCartItem = cartItemRepository.save(cartItem);
-        cart.calculateSubtotal();
-        cartRepository.save(cart);
-        return saveCartItem;
-    }
-
-    @Override
-    public CartItem updateCartItem(Long userId, Long cartItemId, int quantity) throws CartItemException {
-        CartItem cartItem = cartItemRepository.findById(cartItemId).
-                orElseThrow(() -> new CartItemException("CartItem not found with id:" + cartItemId));
-
-        if (!cartItem.getCart().getUser().getUserId().equals(userId)) {
-            throw new CartItemException("CartItem does not belong to user with id: " + userId);
-        }
-
         cartItem.setQuantity(quantity);
-
-        if (cartItem.getVariation() != null) {
-            long price = cartItem.getVariation().getPrice();
-            cartItem.setSubtotal(price * cartItem.getQuantity());
-        }
-
-        CartItem updateCartItem = cartItemRepository.save(cartItem);
-        Cart cart = updateCartItem.getCart();
-        cart.calculateSubtotal();
-        cartRepository.save(cart);
-        return updateCartItem;
+        cartItem.setSubtotal(calculateSubtotal(quantity, variation.getPrice() != null ? variation.getPrice() : 0L));
+        cart.getCartItems().add(cartItem);
+        CartItem savedCartItem = cartItemRepository.save(cartItem);
+        return cartItemMapper.toDto(savedCartItem);
     }
 
     @Override
-    public Boolean isCartItemExist(Cart cart, Variation variation, Long userId) {
-        if (cart == null || variation == null || variation.getId() == null) {
-            return false;
+    @Transactional
+    public CartItemDTO updateCartItem(Long userId, Long cartItemId, int quantity) throws CartItemException {
+        if (quantity <= 0) {
+            throw new CartItemException("Quantity must be greater than zero");
         }
-        return cart.getCartItems().stream()
-                .anyMatch(item -> item.getVariation() != null && item.getVariation().
-                        getId().equals(variation.getId()));
-    }
 
-    @Override
-    public CartItem removeCartItem(Long userId, Long cartItemId) throws CartItemException {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new CartItemException("CartItem not found with id: " + cartItemId));
-        if (!cartItem.getCart().getUser().getUserId().equals(userId)) {
-            throw new CartItemException("CartItem does not belong to user with id: " + userId);
+        validateCartItemOwnership(cartItem, userId);
+
+        Variation variation = cartItem.getVariation();
+        if (variation == null) {
+            throw new CartItemException("CartItem with id " + cartItemId + " has no variation");
         }
+        if (variation.isDeleted()) {
+            throw new CartItemException("Variation with ID " + variation.getVariationId() + " has been deleted");
+        }
+        validateStock(variation, quantity);
+
+        cartItem.setQuantity(quantity);
+        cartItem.setSubtotal(calculateSubtotal(quantity, variation.getPrice() != null ? variation.getPrice() : 0L));
+        CartItem updatedCartItem = cartItemRepository.save(cartItem);
+        return cartItemMapper.toDto(updatedCartItem);
+    }
+
+    @Override
+    @Transactional
+    public void removeCartItemFromCart(Long userId, Long cartItemId) throws CartItemException {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemException("CartItem not found with id: " + cartItemId));
+        validateCartItemOwnership(cartItem, userId);
+
         Cart cart = cartItem.getCart();
         cart.getCartItems().remove(cartItem);
         cartItemRepository.delete(cartItem);
-        cart.calculateSubtotal();
-        cartRepository.save(cart);
-        return cartItem;
     }
 
     @Override
-    public CartItem updateCartItemSelection(Long userId, Long cartItemId, Boolean selected) throws CartItemException {
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new CartItemException("CartItem not found with id: " + cartItemId));
-
-        if (!cartItem.getCart().getUser().getUserId().equals(userId)) {
-            throw new CartItemException("CartItem does not belong to user with id: " + userId);
+    @Transactional
+    public void updateCartItemSelection(Long userId, Long cartItemId, Boolean selected) throws CartItemException {
+        if (selected == null) {
+            throw new CartItemException("Selection status cannot be null");
         }
 
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemException("CartItem not found with id: " + cartItemId));
+        validateCartItemOwnership(cartItem, userId);
         cartItem.setSelected(selected);
-        CartItem updatedCartItem = cartItemRepository.save(cartItem);
+        cartItemRepository.save(cartItem);
+    }
 
-        Cart cart = updatedCartItem.getCart();
-        cart.calculateSubtotal();
-        cartRepository.save(cart);
+    private void validateCartItemOwnership(CartItem cartItem, Long userId) {
+        User owner = getCartOwner(cartItem.getCart());
+        if (owner == null || !owner.getUserId().equals(userId)) {
+            throw new CartItemException("CartItem does not belong to user with id: " + userId);
+        }
+    }
 
-        return updatedCartItem;
+
+    private User getCartOwner(Cart cart) {
+        Customer customer = cart.getCustomer();
+        return customer != null ? customer.getUser() : null;
+    }
+
+    private void validateStock(Variation variation, int quantity) {
+        if (quantity > variation.getStockQuantity()) {
+            throw new CartItemException("Requested quantity " + quantity
+                    + " exceeds available stock " + variation.getStockQuantity());
+        }
+    }
+
+    private long calculateSubtotal(int quantity, long itemPrice) {
+        return quantity * itemPrice;
     }
 }
