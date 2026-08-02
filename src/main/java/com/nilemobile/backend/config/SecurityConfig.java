@@ -34,20 +34,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/products/third-levels").permitAll()
-                        .requestMatchers("/api/products/second-levels").permitAll()
-                        .requestMatchers("/api/products/filter").permitAll()
-                        .requestMatchers("/api/products/id/{productId}").permitAll()
-                        .requestMatchers("/api/user/addresses").permitAll()
-                        .requestMatchers("/api/user/addresses/**").permitAll()
-                        .requestMatchers("/api/variations").permitAll()
-                        .requestMatchers("/api/reviews/variation/{variationId}").permitAll()
-                        .requestMatchers("/api/payment-vnpay/callback").permitAll()
-                        .requestMatchers("/api/payment-vnpay/verify").permitAll()
-                        .requestMatchers("/api/product/getThirdLevel").permitAll()
-                        .requestMatchers("/api/products/filter-simple").permitAll()
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
 
                 ).addFilterBefore(jwtTokenValidationFiler, BasicAuthenticationFilter.class)

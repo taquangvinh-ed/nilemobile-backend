@@ -4,12 +4,11 @@ import com.nilemobile.backend.exception.UserException;
 import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.dto.reponse.UserDTO;
 import com.nilemobile.backend.dto.request.CreateNewUserRequest;
-
 import java.util.List;
 
 public interface UserService {
 
-    User registerUser(CreateNewUserRequest request) throws UserException;
+    User registerUser(CreateNewUserRequest request);
 
     User findUserProfileByJwt(String jwt) throws UserException;
 

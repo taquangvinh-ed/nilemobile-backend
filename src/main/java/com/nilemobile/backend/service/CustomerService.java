@@ -5,7 +5,7 @@ import com.nilemobile.backend.dto.request.CreateNewUserRequest;
 
 public interface CustomerService {
 
-    RegisterNewCustomerResponseDTO registerCustomer(CreateNewUserRequest request);
+    RegisterNewCustomerResponseDTO registerCustomer(CreateNewUserRequest request) ;
 
 
 }

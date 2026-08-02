@@ -1,5 +1,6 @@
 package com.nilemobile.backend.model;
 
+import com.nilemobile.backend.contant.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,8 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private byte roleId;
 
-    private String roleName;
+    @Enumerated(EnumType.STRING)
+    private RoleType roleName;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();

@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

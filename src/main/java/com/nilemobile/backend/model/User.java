@@ -44,10 +44,10 @@ public class User extends BaseEntity {
     @JoinColumn(name="roleId")
     private Role role;
 
-    @OneToOne
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Customer customer;
 
-    @OneToOne
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Admin admin;
 
 }

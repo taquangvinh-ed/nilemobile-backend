@@ -22,24 +22,34 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final CustomerService customerService;
-    private final UserService userService;
     private final AuthenticationService authenticationService;
 
     @PostMapping("/customer/signup")
-    public ApiResponse<?> registerNewCustomer(HttpServletRequest httpServletRequest,  @RequestBody CreateNewUserRequest request) {
+    public ApiResponse<?> registerNewCustomer(@RequestBody CreateNewUserRequest request) {
         authenticationService.register(request);
         return ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())
-                .message("User registered successfully")
+                .message("Customer registered successfully")
+                .timestamp(Timestamp.from(Instant.now()))
+                .body(null)
+                .build();
+    }
+
+    @PostMapping("/admin/signup")
+    public ApiResponse<?> registerNewAdmin(@RequestBody CreateNewUserRequest request) {
+        authenticationService.register(request);
+        return ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("Admin registered successfully")
                 .timestamp(Timestamp.from(Instant.now()))
                 .body(null)
                 .build();
     }
 
     @PostMapping("/login")
-    public ApiResponse<?> login(HttpServletRequest httpServletRequest, @RequestBody LoginRequest loginRequest) {
+    public ApiResponse<?> login(@RequestBody LoginRequest loginRequest) {
         String jwt = authenticationService.login(loginRequest.getIdentifier(), loginRequest.getPassword());
         return ApiResponse.builder()
                 .success(true)

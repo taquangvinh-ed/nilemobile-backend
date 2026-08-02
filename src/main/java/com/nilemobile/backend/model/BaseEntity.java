@@ -1,7 +1,6 @@
 package com.nilemobile.backend.model;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,4 +30,5 @@ public class BaseEntity {
 
     @LastModifiedBy
     private Long updatedBy;
+
 }

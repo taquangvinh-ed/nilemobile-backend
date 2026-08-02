@@ -35,7 +35,7 @@ public class JwtService {
                 .setIssuer("Spring Security with jwt")
                 .setIssuedAt(Date.from(Instant.now()))
                 .claim("name", authentication.getName())
-                .claim("authorities", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority))
+                .claim("authorities", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .signWith(getSignInKey())
                 .compact();
         return "Bearer " + token;
@@ -45,7 +45,7 @@ public class JwtService {
         if (token == null || token.isEmpty()) {
             return false;
         }
-        token = token.substring(7);
+        token = stripBearerPrefix(token);
         try {
             Jwts.parser().verifyWith(getSignInKey()).build()
                     .parse(token);
@@ -64,8 +64,16 @@ public class JwtService {
         return extractClaims(token).get("phoneNumber", String.class);
     }
 
+    public String extractUsername(String token) {
+        return extractClaims(token).get("name", String.class);
+    }
+
     private Claims extractClaims(String jwt) {
-        return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(jwt).getPayload();
+        return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(stripBearerPrefix(jwt)).getPayload();
+    }
+
+    private String stripBearerPrefix(String token) {
+        return token != null && token.startsWith("Bearer ") ? token.substring(7) : token;
     }
 
     public List extractAuthorities(String token) {

@@ -1,24 +1,22 @@
-package com.nilemobile.backend.dto.reponse;
+package com.nilemobile.backend.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserDTO {
-    private Long userId;
+public class AdminDTO {
+    private Long adminId;
 
     private String email;
 
-    private String password;
-
     private String phoneNumber;
 
-    private String roleName;
+    private String firstName;
+
+    private String lastName;
 
     private String createdDateAt;
 }

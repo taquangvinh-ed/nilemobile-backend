@@ -10,6 +10,7 @@ import com.nilemobile.backend.dto.request.CreateNewUserRequest;
 import com.nilemobile.backend.service.CartService;
 import com.nilemobile.backend.service.CustomerService;
 import com.nilemobile.backend.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ public class CustomerServiceImpl implements CustomerService {
     private final CartService cartService;
 
     @Override
-    public RegisterNewCustomerResponseDTO registerCustomer(CreateNewUserRequest request){
+    @Transactional
+    public RegisterNewCustomerResponseDTO registerCustomer(CreateNewUserRequest request) {
         User newUser = userService.registerUser(request);
         Customer newCustomer = new Customer();
         newCustomer.setCustomerId(newUser.getUserId());

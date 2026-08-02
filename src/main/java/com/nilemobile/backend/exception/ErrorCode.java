@@ -1,5 +1,6 @@
 package com.nilemobile.backend.exception;
 
+import com.nilemobile.backend.dto.PaymentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,7 +59,9 @@ public enum ErrorCode {
 
     //Category related errors
     ,CATEGORY_NOT_FOUND(10001, "Category not found")
-    ,CATEGORY_ALREADY_EXISTED(10002, "Category already existed");
+    ,CATEGORY_ALREADY_EXISTED(10002, "Category already existed"),
+
+    ROLE_NOT_FOUND(11001, "Role not found");
 
     private final int code;
     private final String message;

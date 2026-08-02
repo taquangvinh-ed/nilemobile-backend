@@ -13,8 +13,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Customer extends BaseEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
 
     private String firstName;
@@ -22,7 +22,7 @@ public class Customer extends BaseEntity {
     private String lastName;
 
     @OneToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId", nullable = false, updatable = false)
     private User user;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
