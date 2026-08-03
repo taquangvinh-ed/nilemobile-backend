@@ -19,4 +19,5 @@ public class CreateProductRequest {
     private String firstLevel;
     private String secondLevel;
     private String thirdLevel;
+    private int stockQuantity;
 }

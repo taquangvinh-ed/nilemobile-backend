@@ -8,6 +8,8 @@ import org.mapstruct.*;
 public interface VariationMapper {
     Variation toEntity(VariationDTO variationDTO);
 
+    @Mapping(source = "variationId", target = "variationId")
+    @Mapping(source = "product.productId", target = "productId")
     VariationDTO toDto(Variation variation);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

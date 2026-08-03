@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping
+    @PostMapping("/admin/products")
     public ApiResponse<?> createProduct(@RequestBody CreateProductRequest request) {
         var newProduct = productService.createProduct(request);
         return ApiResponse.builder()
@@ -26,7 +26,7 @@ public class ProductController {
                 .build();
     }
 
-    @PutMapping("/{productId}")
+    @PatchMapping("/admin/products/{productId}")
     public ApiResponse<?> updateProduct(@PathVariable Long productId, @RequestBody UpdateProductRequest request) {
         var updatedProduct = productService.updateProduct(productId, request);
         return ApiResponse.builder()
@@ -37,7 +37,7 @@ public class ProductController {
                 .build();
     }
 
-    @DeleteMapping("/{productId}/soft-delete")
+    @DeleteMapping("/admin/products/{productId}/soft-delete")
     public ApiResponse<?> deleteProductSoftly(@PathVariable Long productId) {
         productService.deleteProductSoftly(productId);
         return ApiResponse.builder()
@@ -49,7 +49,7 @@ public class ProductController {
 
 
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/admin/products/{productId}")
     public ApiResponse<?> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
         return ApiResponse.builder()
@@ -59,7 +59,7 @@ public class ProductController {
                 .build();
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/products/{productId}")
     public ApiResponse<?> getProductById(@PathVariable Long productId) {
         var product = productService.getProductWithVariationsAndMethodById(productId);
         return ApiResponse.builder()
@@ -70,7 +70,7 @@ public class ProductController {
                 .build();
     }
 
-    @GetMapping("/category/{categoryName}/all-products")
+    @GetMapping("/products/category/{categoryName}/all-products")
     public ApiResponse<?> getAllProductsByCategory(@PathVariable String categoryName,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size) {
@@ -83,7 +83,7 @@ public class ProductController {
                 .build();
     }
 
-    @GetMapping("/category/{categoryName}/products")
+    @GetMapping("/products/category/{categoryName}/products")
     public ApiResponse<?> getProductsByCategory(@PathVariable String categoryName,
                                                 @RequestParam(defaultValue = "0") int page,
                                                 @RequestParam(defaultValue = "10") int size) {

@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 @RestController
-@RequestMapping(value = "/api/v1/cart/items", produces = "application/json")
+@RequestMapping(value = "/api/v1/customers/cart/items", produces = "application/json")
 @RequiredArgsConstructor
 public class CartItemController {
 

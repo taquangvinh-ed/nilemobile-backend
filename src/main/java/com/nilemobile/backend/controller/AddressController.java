@@ -1,5 +1,6 @@
 package com.nilemobile.backend.controller;
 
+import com.nilemobile.backend.auth.CustomUserDetail;
 import com.nilemobile.backend.contant.SuccessCode;
 import com.nilemobile.backend.dto.AddressDTO;
 import com.nilemobile.backend.dto.reponse.ApiResponse;
@@ -8,6 +9,7 @@ import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.service.AddressService;
 import com.nilemobile.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -15,7 +17,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user/addresses")
+@RequestMapping("/api/v1/customers/addresses")
 @RequiredArgsConstructor
 public class AddressController {
 
@@ -24,12 +26,9 @@ public class AddressController {
     private final UserService userService;
 
     @GetMapping
-    public ApiResponse<List<AddressDTO>> getCustomerAddresses(@RequestHeader("Authorization") String jwt) {
-        User user = userService.findUserProfileByJwt(jwt);
-        Long userId = user.getUserId();
-
+    public ApiResponse<List<AddressDTO>> getCustomerAddresses(@AuthenticationPrincipal CustomUserDetail customUserDetail) {
+        Long userId = customUserDetail.getUserId();
         List<AddressDTO> addresses = addressService.getAddressesByCustomerId(userId);
-
         return ApiResponse.<List<AddressDTO>>builder()
                 .success(true)
                 .code(SuccessCode.GET_SUCCESS.getCode())
@@ -40,10 +39,9 @@ public class AddressController {
     }
 
     @PostMapping
-    public ApiResponse<AddressDTO> addAddress(@RequestHeader("Authorization") String jwt, @RequestBody AddAddressRequest request) {
-        User user = userService.findUserProfileByJwt(jwt);
-        Long userId = user.getUserId();
+    public ApiResponse<AddressDTO> addAddress(@AuthenticationPrincipal CustomUserDetail customUserDetail, @RequestBody AddAddressRequest request) {
 
+        Long userId = customUserDetail.getUserId();
         AddressDTO newAddress = addressService.addAddress(request, userId);
 
         return ApiResponse.<AddressDTO>builder()
@@ -55,10 +53,9 @@ public class AddressController {
                 .build();
     }
 
-    @PutMapping("/{addressId}")
-    public ApiResponse<AddressDTO> updateAddress(@RequestHeader("Authorization") String jwt, @PathVariable Long addressId, @RequestBody AddressDTO addressDTO) {
-        User user = userService.findUserProfileByJwt(jwt);
-        Long userId = user.getUserId();
+    @PatchMapping("/{addressId}")
+    public ApiResponse<AddressDTO> updateAddress(
+            @PathVariable Long addressId, @RequestBody AddressDTO addressDTO) {
 
         AddressDTO updatedAddress = addressService.updateAddress(addressDTO, addressId);
 
@@ -72,10 +69,7 @@ public class AddressController {
     }
 
     @DeleteMapping("/{addressId}")
-    public ApiResponse<Void> deleteAddress(@RequestHeader("Authorization") String jwt, @PathVariable Long addressId) {
-        User user = userService.findUserProfileByJwt(jwt);
-        Long userId = user.getUserId();
-
+    public ApiResponse<Void> deleteAddress(@PathVariable Long addressId) {
         addressService.deleteAddress(addressId);
 
         return ApiResponse.<Void>builder()

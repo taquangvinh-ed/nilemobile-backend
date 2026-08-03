@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/variations")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class VariationController {
 
     private final VariationService variationService;
 
-    @PostMapping
+    @PostMapping("/admin/variations")
     public ApiResponse<?> createVariation(@RequestParam Long productId, @Valid @RequestBody VariationDTO request){
         var createdVariation = variationService.createVariation(productId, request);
         return ApiResponse.builder()
@@ -26,8 +26,8 @@ public class VariationController {
                 .build();
     }
 
-    @PutMapping
-    public ApiResponse<?> updateVariation(@RequestParam Long variationId, @Valid @RequestBody VariationDTO request){
+    @PatchMapping("/admin/variations/{variationId}")
+    public ApiResponse<?> updateVariation(@PathVariable Long variationId, @Valid @RequestBody VariationDTO request){
         var updatedVariation = variationService.updateVariation(variationId, request);
         return ApiResponse.builder()
                 .success(true)

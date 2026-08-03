@@ -1,6 +1,7 @@
 package com.nilemobile.backend.service;
 
 
+import com.nilemobile.backend.auth.CustomUserDetail;
 import com.nilemobile.backend.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
@@ -15,11 +16,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class JwtService {
 
-    private String secretKey ;
+    private final String secretKey ;
 
     public JwtService(@Value("${jwt.secret-key}") String secretKey) {
         this.secretKey = secretKey;
@@ -30,12 +32,15 @@ public class JwtService {
     }
 
     public String generateToken(Authentication authentication) {
+        CustomUserDetail userDetails = (CustomUserDetail) authentication.getPrincipal();
         String token = Jwts.builder()
                 .setSubject("Jwt Token")
                 .setIssuer("Spring Security with jwt")
                 .setIssuedAt(Date.from(Instant.now()))
+                .claim("userId", userDetails.getUserId())
                 .claim("name", authentication.getName())
                 .claim("authorities", authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .expiration(Date.from(Instant.now().plusSeconds(7200))) // Token valid for 1 hour
                 .signWith(getSignInKey())
                 .compact();
         return "Bearer " + token;
@@ -59,16 +64,15 @@ public class JwtService {
         }
     }
 
-
-    public String extractPhoneNumber(String token) {
-        return extractClaims(token).get("phoneNumber", String.class);
+    public Map<String, Object> extractAllClaims(String token) {
+        return extractClaims(token);
     }
 
     public String extractUsername(String token) {
         return extractClaims(token).get("name", String.class);
     }
 
-    private Claims extractClaims(String jwt) {
+    public Claims extractClaims(String jwt) {
         return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(stripBearerPrefix(jwt)).getPayload();
     }
 
@@ -78,5 +82,9 @@ public class JwtService {
 
     public List extractAuthorities(String token) {
         return extractClaims(token).get("authorities", List.class);
+    }
+
+    public Long extractUserId(String token) {
+        return extractClaims(token).get("userId", Long.class);
     }
 }

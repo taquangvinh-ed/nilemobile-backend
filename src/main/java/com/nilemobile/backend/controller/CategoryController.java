@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/customers/categories")
 @RequiredArgsConstructor
-
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -28,7 +27,7 @@ public class CategoryController {
                 .build();
     }
 
-    @PutMapping("/{categoryId}")
+    @PatchMapping("/{categoryId}")
     public ApiResponse<?> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO updatedCategory = categoryService.updateCategory(categoryId, categoryDTO);
         return ApiResponse.builder()

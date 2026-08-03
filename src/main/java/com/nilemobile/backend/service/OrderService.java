@@ -11,29 +11,29 @@ import java.util.Map;
 
 public interface OrderService {
 
-    public OrderDTO createOrder(Long userId, Long addressId) throws Orderexception;
+    OrderDTO createOrder(Long userId, Long addressId) throws Orderexception;
 
-    public OrderDTO findOrderById(Long orderId) throws Orderexception;
+    OrderDTO findOrderById(Long orderId) throws Orderexception;
 
-    public List<OrderDTO> orderHistory(Long userId);
+    List<OrderDTO> orderHistory(Long userId);
 
-    public OrderDTO confirmOrder(Long orderId) throws Orderexception;
+    OrderDTO confirmOrder(Long orderId) throws Orderexception;
 
     OrderDTO processOrder(Long orderId) throws Orderexception;
 
-    public OrderDTO shippedOrder(Long orderId) throws Orderexception;
+    OrderDTO shippedOrder(Long orderId) throws Orderexception;
 
      OrderDTO deliveredOrder(Long orderId) throws Orderexception;
 
     OrderDTO completeOrder(Long orderId) throws Orderexception;
 
-    public OrderDTO canceledOrder(Long orderId) throws Orderexception;
+    OrderDTO canceledOrder(Long orderId) throws Orderexception;
 
-    public List<OrderDTO> getAllOrders(Long userId);
+    List<OrderDTO> getAllOrders(Long userId);
 
-    public void deleteOrder(Long orderId) throws Orderexception;
+    void deleteOrder(Long orderId) throws Orderexception;
 
-    public List<OrderDTO> filterOrderByStatus(String status);
+    List<OrderDTO> filterOrderByStatus(String status);
 
     OrderDTO updateShippingAddress(Long orderId, Address shippingAddress) throws Orderexception;
 

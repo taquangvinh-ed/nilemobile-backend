@@ -33,39 +33,36 @@ public class ProductServiceImp implements ProductService {
     @Transactional
     @Override
     public ProductDTO createProduct(CreateProductRequest request) {
+       Category firstLevel = null;
+       Category secondLevel = null;
+       Category thirdLevel = null;
 
-        String firstLevelName = request.getFirstLevel().trim();
-        final Category firstLevel = categoryRepository.findByNameAndLevel(firstLevelName, 1)
-            .orElseGet(()->{
-                Category newFirstLevel = new Category();
-                newFirstLevel.setName(firstLevelName);
-                newFirstLevel.setLevel(1);
-                return categoryRepository.save(newFirstLevel);
-            });
+        if(request.getFirstLevel() != null && !request.getFirstLevel().trim().isEmpty()) {
+           String firstLevelName = request.getFirstLevel().trim();
+           firstLevel = categoryRepository.findByNameAndLevel(firstLevelName, 1)
+                   .orElseGet(()->{
+                       Category newFirstLevel = new Category();
+                       newFirstLevel.setName(firstLevelName);
+                       newFirstLevel.setLevel(1);
+                       return categoryRepository.save(newFirstLevel);
+                   });
+       }
 
-        String secondLevelName = request.getSecondLevel() != null ? request.getSecondLevel().trim() : "";
-        Category secondLevel = null;
-        if (!secondLevelName.isEmpty()) {    
-            Optional<Category> secondLevelOpt = categoryRepository.findByNameAndParentCategory(secondLevelName, firstLevel);
-            secondLevel = secondLevelOpt.orElseGet(() -> {
-                Category newSecondLevel = new Category();
-                newSecondLevel.setName(secondLevelName);
-                newSecondLevel.setLevel(2);
-                newSecondLevel.setParentCategory(firstLevel);
-                return categoryRepository.save(newSecondLevel);
-            });
-        }
-        
-        String thirdLevelName = request.getThirdLevel() != null ? request.getThirdLevel().trim() : "";
-        Category thirdLevel = null;
-        if (!thirdLevelName.isEmpty()) {
-            if (secondLevel == null) {
-                throw new ProductException(
-                        INVALID_PRODUCT,
-                        "Third level category requires second level category to be present"
-                );
-            }
+       if(request.getSecondLevel() != null && !request.getSecondLevel().trim().isEmpty()) {
+           String secondLevelName =request.getSecondLevel().trim();
+           Category parent = firstLevel;
+           Optional<Category> secondLevelOpt = categoryRepository.findByNameAndParentCategory(secondLevelName, parent);
+           secondLevel = secondLevelOpt.orElseGet(() -> {
+               Category newSecondLevel = new Category();
+               newSecondLevel.setName(secondLevelName);
+               newSecondLevel.setLevel(2);
+               newSecondLevel.setParentCategory(parent);
+               return categoryRepository.save(newSecondLevel);
+           });
+       }
 
+        if (request.getThirdLevel() != null && !request.getThirdLevel().trim().isEmpty()) {
+            String thirdLevelName = request.getThirdLevel().trim();
             Category parent = secondLevel;
             Optional<Category> thirdLevelOpt = categoryRepository.findByNameAndParentCategory(thirdLevelName, parent);
             thirdLevel = thirdLevelOpt.orElseGet(() -> {
@@ -82,6 +79,7 @@ public class ProductServiceImp implements ProductService {
         Product savedProduct =  productRepository.save(product);
         return productMapper.toDto(savedProduct);
     }
+
 
     @Transactional
     @Override

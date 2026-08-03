@@ -114,5 +114,10 @@ public class UserServiceImp implements UserService {
         return userMapper.toDTOList(users);
     }
 
+    @Override
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
 
 }

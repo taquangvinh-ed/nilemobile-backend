@@ -70,7 +70,7 @@ public class VNPayConfig {
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount * 100L));
         vnpParamsMap.put("vnp_CurrCode", "VND");
         vnpParamsMap.put("vnp_TxnRef", String.valueOf(orderId));
-        vnpParamsMap.put("vnp_OrderInfo", "Thanh toan don hang " + String.valueOf(orderId));
+        vnpParamsMap.put("vnp_OrderInfo", "Thanh toan don hang " + orderId);
         vnpParamsMap.put("vnp_OrderType", this.orderType);
         vnpParamsMap.put("vnp_Locale", "vn");
         vnpParamsMap.put("vnp_ReturnUrl", this.vnp_ReturnUrl);

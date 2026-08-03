@@ -16,4 +16,5 @@ public interface UserService {
 
     List<UserDTO> getAllUsers();
 
+    User getUserById(Long userId);
 }

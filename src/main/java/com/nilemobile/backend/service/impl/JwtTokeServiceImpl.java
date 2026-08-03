@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class JwtTokeServiceImpl implements JwtTokenService {
 
-    private String jwtSecretKey;
+    private final String jwtSecretKey;
 
     public JwtTokeServiceImpl(@Value("${jwt.secret-key}") String jwtSecretKey) {
         this.jwtSecretKey = jwtSecretKey;

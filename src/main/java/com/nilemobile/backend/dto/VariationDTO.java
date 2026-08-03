@@ -11,6 +11,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class VariationDTO {
 
+    private Long variationId;
+
     private String variationName;
 
     private Map<String, String> attributes;
