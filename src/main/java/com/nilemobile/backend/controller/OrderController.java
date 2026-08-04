@@ -1,5 +1,6 @@
 package com.nilemobile.backend.controller;
 
+import com.nilemobile.backend.auth.CustomUserDetail;
 import com.nilemobile.backend.contant.SuccessCode;
 import com.nilemobile.backend.dto.OrderDTO;
 import com.nilemobile.backend.dto.reponse.ApiResponse;
@@ -12,6 +13,7 @@ import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.service.OrderService;
 import com.nilemobile.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -19,26 +21,16 @@ import java.time.Instant;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/v1/customers/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    private final UserService userService;
-
-    private final OrderMapper orderMapper;
-
     @PostMapping
-    public ApiResponse<OrderDTO> createOrder(@RequestHeader("Authorization") String jwt, @RequestParam Long addressId) {
-        User user = userService.findUserProfileByJwt(jwt);
-        Customer customer = user.getCustomer();
-        if (customer == null) {
-            throw new Orderexception("Customer not found for user with id: " + user.getUserId());
-        }
-
-        OrderDTO orderDTO = orderService.createOrder(customer.getCustomerId(), addressId);
-
+    public ApiResponse<OrderDTO> createOrder(@AuthenticationPrincipal CustomUserDetail customerUserDetails, @RequestParam Long addressId) {
+        Long userId = customerUserDetails.getUserId();
+        OrderDTO orderDTO = orderService.createOrder(userId, addressId);
         return ApiResponse.<OrderDTO>builder()
                 .success(true)
                 .code(SuccessCode.CREATE_SUCCESS.getCode())
@@ -50,15 +42,15 @@ public class OrderController {
 
     @GetMapping
     public ApiResponse<List<OrderDTO>> getUserOrders(
-            @RequestHeader("Authorization") String jwt,
+            @AuthenticationPrincipal CustomUserDetail customerUserDetails,
             @RequestParam(value = "status", required = false) String status) {
-        User user = userService.findUserProfileByJwt(jwt);
 
+        Long userId = customerUserDetails.getUserId();
         List<OrderDTO> orderDTOs;
         if (status == null || status.isBlank() || status.equalsIgnoreCase("all")) {
-            orderDTOs = orderService.getAllOrders(user.getUserId());
+            orderDTOs = orderService.getAllOrders(userId);
         } else {
-            orderDTOs = orderService.getOrdersByUserAndStatus(user.getUserId(), status);
+            orderDTOs = orderService.getOrdersByUserAndStatus(userId,  status);
         }
 
         return ApiResponse.<List<OrderDTO>>builder()
