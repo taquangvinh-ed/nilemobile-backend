@@ -20,6 +20,6 @@ public class CartItemDTO {
 
     private Long discountPrice;
 
-    private Boolean isSelected;
+    private Boolean selected;
 
 }

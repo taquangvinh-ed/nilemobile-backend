@@ -8,6 +8,7 @@ import org.mapstruct.*;
 public interface CartItemMapper {
     CartItem toEntity(CartItemDTO cartItemDTO);
 
+    @Mapping(target = "name", source = "variation.variationName")
     CartItemDTO toDto(CartItem cartItem);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

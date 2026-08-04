@@ -69,12 +69,13 @@ public class CartItemServiceImp implements CartItemService {
             return cartItemMapper.toDto(updatedCartItem);
         }
 
-        CartItem cartItem = new CartItem();
-        cartItem.setVariation(variation);
-        cartItem.setCart(cart);
-        cartItem.setQuantity(quantity);
-        cartItem.setSubtotal(calculateSubtotal(quantity, variation.getPrice() != null ? variation.getPrice() : 0L));
-        cart.getCartItems().add(cartItem);
+        CartItem cartItem = CartItem.builder()
+                .variation(variation)
+                .cart(cart)
+                .quantity(quantity)
+                .subtotal(calculateSubtotal(quantity, variation.getPrice() != null ? variation.getPrice() : 0L))
+                .isSelected(false)
+                .build();
         CartItem savedCartItem = cartItemRepository.save(cartItem);
         return cartItemMapper.toDto(savedCartItem);
     }

@@ -1,5 +1,6 @@
 package com.nilemobile.backend.controller;
 
+import com.nilemobile.backend.auth.CustomUserDetail;
 import com.nilemobile.backend.contant.SuccessCode;
 import com.nilemobile.backend.dto.CartItemDTO;
 import com.nilemobile.backend.dto.reponse.ApiResponse;
@@ -8,6 +9,7 @@ import com.nilemobile.backend.model.User;
 import com.nilemobile.backend.service.CartItemService;
 import com.nilemobile.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -34,13 +36,13 @@ public class CartItemController {
                 .build();
     }
 
-    @PutMapping("/{cartItemId}")
+    @PatchMapping("/{cartItemId}")
     public ApiResponse<CartItemDTO> updateCartItem(
-            @RequestHeader("Authorization") String jwt,
+            @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @PathVariable Long cartItemId,
             @RequestParam int quantity) {
-        User user = userService.findUserProfileByJwt(jwt);
-        CartItemDTO cartItemDTO = cartItemService.updateCartItem(user.getUserId(), cartItemId, quantity);
+        Long userId = customUserDetail.getUserId();
+        CartItemDTO cartItemDTO = cartItemService.updateCartItem(userId, cartItemId, quantity);
         return ApiResponse.<CartItemDTO>builder()
                 .success(true)
                 .code(SuccessCode.UPDATE_SUCCESS.getCode())
@@ -64,13 +66,13 @@ public class CartItemController {
                 .build();
     }
 
-    @PutMapping("/{cartItemId}/select")
+    @PatchMapping("/{cartItemId}/select")
     public ApiResponse<?> updateCartItemSelection(
-            @RequestHeader("Authorization") String jwt,
+           @AuthenticationPrincipal CustomUserDetail customUserDetail,
             @PathVariable Long cartItemId,
             @RequestParam Boolean selected) {
-        User user = userService.findUserProfileByJwt(jwt);
-        cartItemService.updateCartItemSelection(user.getUserId(), cartItemId, selected);
+        Long userId = customUserDetail.getUserId();
+        cartItemService.updateCartItemSelection(userId, cartItemId, selected);
         return ApiResponse.builder()
                 .success(true)
                 .code(SuccessCode.UPDATE_SUCCESS.getCode())

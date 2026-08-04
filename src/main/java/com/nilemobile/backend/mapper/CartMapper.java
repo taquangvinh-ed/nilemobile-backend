@@ -1,5 +1,6 @@
 package com.nilemobile.backend.mapper;
 
+import com.nilemobile.backend.dto.CartDTO;
 import com.nilemobile.backend.model.Cart;
 import org.mapstruct.*;
 
@@ -12,8 +13,17 @@ public interface CartMapper {
         cart.getCartItems().forEach(cartItem -> cartItem.setCart(cart));
     }
 
-    com.nilemobile.backend.dto.CartDTO toDto(Cart cart);
+
+    CartDTO toDto(Cart cart);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Cart partialUpdate(com.nilemobile.backend.dto.CartDTO cartDTO, @MappingTarget Cart cart);
+
+    @AfterMapping
+    default void setTotalItem(Cart cart, @MappingTarget CartDTO cartDTO) {
+        int totalItems = cart.getCartItems().stream()
+                .mapToInt(com.nilemobile.backend.model.CartItem::getQuantity)
+                .sum();
+        cartDTO.setTotalItems(totalItems);
+    }
 }
